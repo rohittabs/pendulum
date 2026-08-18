@@ -2,7 +2,7 @@
 // Registered from index.html; must sit alongside it (a SW cannot be registered from a blob: or data: URL).
 const CACHE = 'pendulum-v3';
 const SHELL = [
-  './', './index.html', './slides.html', './manifest.webmanifest', './logo.png',
+  './', './index.html', './slides.html', './manifest.webmanifest', './logo.png', './qr-upi.png',
   './icon-192.png', './icon-512.png', './icon-maskable-192.png', './icon-maskable-512.png',
   './apple-touch-icon.png', './favicon-32.png', './favicon.ico'
 ];
