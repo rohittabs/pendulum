@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#08080b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pendulum">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08080b;--bg2:#121218;--panel:#141419;--panel2:#1c1c24;--line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.18);--ink:#f4f3f6;--dim:rgba(244,243,246,.56);--faint:rgba(244,243,246,.52);--acc:#ea0093;--acc-soft:rgba(234,0,147,.18);--acc2:#4a3ec0;--chip:rgba(255,255,255,.05);--font-display:'Anton','Arial Narrow',Impact,sans-serif;--font-ui:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+[data-pdl-theme="light"]{--bg:#efeef2;--bg2:#fbfbfd;--panel:#ffffff;--panel2:#f4f3f7;--line:rgba(12,8,24,.11);--line2:rgba(12,8,24,.22);--ink:#14121a;--dim:rgba(20,18,26,.6);--faint:rgba(20,18,26,.56);--acc:#d1007f;--acc-soft:rgba(209,0,127,.13);--acc2:#4a3ec0;--chip:rgba(12,8,24,.04)}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);overscroll-behavior:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;font-family:var(--font-ui);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;font-family:inherit}
+input,select{font-family:inherit;color:inherit}
+a{color:var(--acc);text-decoration:none}
+a:hover{color:var(--ink)}
+*:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+header button{color:var(--dim);transition:color 120ms ease-out}
+header > div button:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:50%}
+header button:hover{color:var(--ink)}
+::selection{background:var(--acc);color:#fff}
+@keyframes pdl-rise{from{transform:translateY(101%)}to{transform:translateY(0)}}
+@keyframes pdl-fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</helmet>
+<div data-r="root" style="min-height:100vh;background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 46%);display:flex;justify-content:center;position:relative;overflow:hidden">
+  <div style="width:100%;max-width:452px;display:flex;flex-direction:column;gap:20px;padding:calc(16px + env(safe-area-inset-top)) min(20px,4.5vw) calc(24px + env(safe-area-inset-bottom))">
+
+    <header style="display:flex;flex-direction:column;gap:11px">
+    <div style="display:flex;align-items:center;gap:13px">
+      <!-- USER LOGO GOES HERE -->
+      <div id="logo-slot" style="width:36px;height:36px;flex:none;display:grid;place-items:center">
+        <img src="logo.png" alt="Pendulum" width="36" height="36" draggable="false" style="width:100%;height:100%;object-fit:contain;display:block;image-rendering:auto;-webkit-user-drag:none"></div>
+      <div style="font-family:var(--font-display);font-size:18px;letter-spacing:.3em;line-height:1;padding-top:2px;white-space:nowrap;flex:none">PENDULUM</div>
+      <div style="flex:1"></div>
+      <button onClick="{{ toggleTheme }}" aria-label="{{ themeLabel }}" title="{{ themeLabel }}" style="{{ themeBtnStyle }}">
+        <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4.4" fill="currentColor" stroke="none"></circle>
+            <path d="M12 2.8v2M12 19.2v2M4.4 4.4l1.4 1.4M18.2 18.2l1.4 1.4M2.8 12h2M19.2 12h2M4.4 19.6l1.4-1.4M18.2 5.8l1.4-1.4"></path>
+          </svg>
+        </sc-if>
+        <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="currentColor"></path>
+          </svg>
+        </sc-if>
+      </button>
+    </div>
+    <nav style="display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:9px">
+      <button onClick="{{ openSong }}" style="{{ navSong }}">SONG</button>
+      <button onClick="{{ openSettings }}" style="{{ navSettings }}">SETTINGS</button>
+      <button onClick="{{ openSupport }}" style="{{ navSupport }}">SUPPORT</button>
+    </nav>
+    </header>
+
+    <div style="position:relative;width:100%;max-width:min(318px,44vh);aspect-ratio:1;margin:2px auto 0;display:grid;place-items:center">
+      <div data-r="ring" style="position:absolute;inset:0;border-radius:50%;border:2px solid var(--line);will-change:transform"></div>
+      <div data-r="ring2" style="position:absolute;inset:8%;border-radius:50%;border:1px solid var(--line);opacity:.5;will-change:transform"></div>
+      <div data-r="glow" style="position:absolute;inset:6%;border-radius:50%;background:radial-gradient(circle,var(--acc-soft) 0%,transparent 68%);opacity:0;will-change:opacity"></div>
+      <div data-r="count" style="position:absolute;inset:0;border-radius:50%;display:none;place-items:center;background:var(--bg);font-family:var(--font-display);font-size:min(88px,20vw,16vh);color:var(--acc);letter-spacing:.02em">4</div>
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+        <sc-if value="{{ editingBpm }}" hint-placeholder-val="{{ false }}">
+          <input data-r="bpminput" type="text" inputmode="decimal" value="{{ bpmDraft }}" onChange="{{ onBpmDraft }}" onKeyDown="{{ onBpmKey }}" onBlur="{{ commitBpm }}" style="width:190px;background:transparent;border:0;border-bottom:2px solid var(--acc);text-align:center;font-size:64px;font-weight:600;letter-spacing:-.03em;padding:0 0 4px;outline:none">
+        </sc-if>
+        <sc-if value="{{ notEditingBpm }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ startEditBpm }}" aria-label="Set tempo" style="display:block;padding:0">
+            <span data-r="bpmv" aria-live="polite" style="display:block;font-size:min(76px,17vw,14vh);font-weight:600;line-height:.94;letter-spacing:-.035em;font-variant-numeric:tabular-nums">{{ bpmText }}</span>
+          </button>
+        </sc-if>
+        <div style="font-size:10px;letter-spacing:.28em;color:var(--faint);margin-top:8px">BPM</div>
+        <div data-r="marking" style="font-size:14px;letter-spacing:.13em;color:var(--dim);margin-top:14px;text-transform:uppercase">{{ markingText }}</div>
+        <div style="display:flex;align-items:baseline;gap:9px;margin-top:6px">
+          <span style="font-size:19px;font-weight:600;font-variant-numeric:tabular-nums">{{ sigText }}</span>
+          <span style="font-size:11px;letter-spacing:.1em;color:var(--faint);font-variant-numeric:tabular-nums">{{ groupText }}</span>
+          <span style="font-size:11px;letter-spacing:.08em;color:var(--faint)">{{ noteText }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:9px;margin-top:-2px">
+      <div data-r="dots" style="display:flex;align-items:center;width:100%;min-height:32px;padding:0 2px">
+        <sc-for list="{{ dots }}" as="d" hint-placeholder-count="4">
+          <button data-pulse="{{ d.p }}" data-sub="{{ d.sj }}" onClick="{{ d.tap }}" disabled="{{ d.dis }}" aria-hidden="{{ d.hid }}" aria-label="{{ d.label }}" style="{{ d.wrap }}"><span style="{{ d.dot }}"></span></button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ polyOn }}" hint-placeholder-val="{{ false }}">
+        <div data-r="pdots" style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:9px">
+          <sc-for list="{{ polyDots }}" as="d" hint-placeholder-count="3">
+            <div data-poly="{{ d.i }}" style="{{ d.style }}"></div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <div style="font-size:10px;letter-spacing:.11em;color:var(--faint);text-align:center">{{ dotCaption }}</div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-top:2px">
+      <button onPointerDown="{{ downStart }}" data-step="-1" aria-label="Slower" style="width:46px;height:46px;flex:none;border-radius:14px;background:var(--chip);border:1px solid var(--line);font-size:22px;line-height:1;color:var(--dim)">−</button>
+      <div data-r="slider" onPointerDown="{{ sliderDown }}" role="slider" tabindex="0" onKeyDown="{{ sliderKey }}" aria-label="Tempo" style="flex:1;height:46px;position:relative;display:flex;align-items:center;touch-action:none;cursor:pointer">
+        <div style="position:absolute;left:0;right:0;height:3px;background:var(--line);border-radius:3px"></div>
+        <div data-r="fill" style="position:absolute;left:0;height:3px;width:36%;background:var(--acc);border-radius:3px"></div>
+        <div data-r="knob" style="position:absolute;left:36%;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>
+      </div>
+      <button onPointerDown="{{ downStart }}" data-step="1" aria-label="Faster" style="width:46px;height:46px;flex:none;border-radius:14px;background:var(--chip);border:1px solid var(--line);font-size:22px;line-height:1;color:var(--dim)">+</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.14em;color:var(--faint);margin-top:-16px;padding:0 58px"><span>20</span><span>160</span><span>300</span></div>
+
+    <div style="display:flex;gap:12px">
+      <button onClick="{{ tap }}" style="flex:1;height:54px;border-radius:16px;background:var(--chip);border:1px solid var(--line);font-size:13px;letter-spacing:.22em;font-weight:600">TAP</button>
+      <button onClick="{{ toggleDecimals }}" aria-pressed="{{ decimals }}" style="{{ decStyle }}">0.1</button>
+    </div>
+
+    <button onClick="{{ toggleRun }}" style="{{ startStyle }}">{{ startLabel }}</button>
+
+    <div data-r="live" aria-live="polite" style="text-align:center;font-size:11px;letter-spacing:.14em;color:var(--faint);font-variant-numeric:tabular-nums;min-height:14px">{{ liveHint }}</div>
+  </div>
+
+  <sc-if value="{{ settingsOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePanel }}" style="position:fixed;inset:0;z-index:80;display:flex;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(2px)">
+      <div onClick="{{ swallow }}" style="width:100%;max-width:452px;height:100%;background:var(--bg);border-left:1px solid var(--line);border-right:1px solid var(--line);display:flex;flex-direction:column;animation:pdl-rise 170ms ease-out">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(18px + env(safe-area-inset-top)) 20px 14px;border-bottom:1px solid var(--line);flex:none">
+          <div style="font-family:var(--font-display);font-size:14px;letter-spacing:.3em">SETTINGS</div>
+          <button onClick="{{ closePanel }}" style="font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:600;padding:6px 0">DONE</button>
+        </div>
+        <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 20px calc(30px + env(safe-area-inset-bottom))">
+
+          <section style="padding:20px 0 22px">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">TIME SIGNATURE</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ sigChips }}" as="c" hint-placeholder-count="13">
+                <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ customSig }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+                <input type="number" min="1" max="32" value="{{ num }}" onChange="{{ onNum }}" aria-label="Beats per bar" style="width:74px;height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);text-align:center;font-size:16px;outline:none">
+                <span style="color:var(--faint);font-size:18px">/</span>
+                <select value="{{ den }}" onChange="{{ onDen }}" aria-label="Beat unit" style="height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);font-size:16px;padding:0 12px;outline:none">
+                  <option value="1">1</option><option value="2">2</option><option value="4">4</option><option value="8">8</option><option value="16">16</option><option value="32">32</option>
+                </select>
+              </div>
+            </sc-if>
+          </section>
+
+          <section style="padding:20px 0 22px;border-top:1px solid var(--line)">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">BEAT ACCENTS</div>
+            <div style="display:flex;flex-wrap:wrap;gap:9px;align-items:center;min-height:30px">
+              <sc-for list="{{ accentDots }}" as="d" hint-placeholder-count="4">
+                <button onClick="{{ d.tap }}" aria-label="{{ d.label }}" style="{{ d.style }}"></button>
+              </sc-for>
+            </div>
+            <div style="font-size:11px;color:var(--dim);margin-top:11px">Tap a dot to cycle it: click → accent → mute.</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+              <span style="font-size:11px;letter-spacing:.16em;color:var(--faint)">GROUPING</span>
+              <span style="font-size:14px;font-weight:600;font-variant-numeric:tabular-nums">{{ groupReadout }}</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <input type="text" value="{{ groupDraft }}" onChange="{{ onGroupDraft }}" onKeyDown="{{ onGroupKey }}" placeholder="3+2+2" style="flex:1;height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);padding:0 14px;font-size:15px;outline:none">
+              <button onClick="{{ applyGrouping }}" style="height:42px;padding:0 18px;border-radius:11px;background:var(--chip);border:1px solid var(--line2);font-size:12px;letter-spacing:.14em;font-weight:600">APPLY</button>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+              <sc-for list="{{ groupChips }}" as="c" hint-placeholder-count="3">
+                <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+          </section>
+
+          <section style="padding:20px 0 22px;border-top:1px solid var(--line)">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">NOTE VALUE</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ noteChips }}" as="c" hint-placeholder-count="13">
+                <button onClick="{{ c.on }}" disabled="{{ c.dis }}" title="{{ c.title }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+            <div style="font-size:12px;color:var(--dim);margin-top:12px;font-variant-numeric:tabular-nums">{{ modeExample }}</div>
+          </section>
+
+          <section style="padding:20px 0 22px;border-top:1px solid var(--line)">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">SUBDIVISIONS</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ subChips }}" as="c" hint-placeholder-count="9">
+                <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ customSub }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+                <input type="number" min="2" max="16" value="{{ subdiv }}" onChange="{{ onSubdiv }}" aria-label="Notes per beat" style="width:74px;height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);text-align:center;font-size:16px;outline:none">
+                <span style="font-size:12px;color:var(--dim)">notes per beat</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ subWarn }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12px;color:var(--acc);margin-top:12px">{{ subWarn }}</div>
+            </sc-if>
+          </section>
+
+          <section style="padding:20px 0 22px;border-top:1px solid var(--line)">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">SWING</div>
+            <div style="display:flex;gap:8px">
+              <sc-for list="{{ swingChips }}" as="c" hint-placeholder-count="3">
+                <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+            <div data-r="swwrap" style="margin-top:18px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:2px">
+                <span data-r="swval" style="font-size:22px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums">67%</span>
+                <span data-r="swratio" style="font-size:11px;letter-spacing:.1em;color:var(--dim);font-variant-numeric:tabular-nums">TRIPLET · 2.00 : 1</span>
+              </div>
+              <div data-r="swtrack" onPointerDown="{{ swDown }}" onKeyDown="{{ swKey }}" role="slider" tabindex="0" aria-label="Swing amount" aria-valuemin="50" aria-valuemax="75" style="position:relative;height:44px;display:flex;align-items:center;touch-action:none;cursor:pointer;user-select:none;-webkit-user-select:none">
+                <div style="position:absolute;left:0;right:0;height:3px;background:var(--line);border-radius:3px"></div>
+                <div data-r="swfill" style="position:absolute;left:0;height:3px;width:68%;background:var(--acc);border-radius:3px"></div>
+                <div style="position:absolute;left:0;top:12px;width:1px;height:8px;background:var(--line2)"></div>
+                <div style="position:absolute;left:68%;top:12px;width:1px;height:8px;background:var(--line2)"></div>
+                <div style="position:absolute;left:100%;top:12px;width:1px;height:8px;background:var(--line2)"></div>
+                <div data-r="swknob" style="position:absolute;left:68%;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none"></div>
+              </div>
+              <div style="position:relative;height:13px;font-size:9.5px;letter-spacing:.1em;color:var(--faint);margin-top:-6px">
+                <span style="position:absolute;left:0">50 STRAIGHT</span>
+                <span style="position:absolute;left:68%;transform:translateX(-50%);white-space:nowrap">67 TRIPLET</span>
+                <span style="position:absolute;right:0">75 DOTTED</span>
+              </div>
+            </div>
+            <div data-r="swnote" style="font-size:11px;color:var(--dim);margin-top:14px">{{ swingNote }}</div>
+          </section>
+
+          <section style="padding:20px 0 22px;border-top:1px solid var(--line)">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">BAR PATTERN</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ patChips }}" as="c" hint-placeholder-count="8">
+                <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ patRandom }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+                <input type="number" min="1" max="100" value="{{ randomPct }}" onChange="{{ onRandomPct }}" aria-label="Percent of bars silent" style="width:74px;height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);text-align:center;font-size:16px;outline:none">
+                <span style="font-size:12px;color:var(--dim)">% of bars silenced</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ patCustom }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+                <input type="number" min="0" max="64" value="{{ patOn }}" onChange="{{ onPatOn }}" aria-label="Bars on" style="width:70px;height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);text-align:center;font-size:16px;outline:none">
+                <span style="font-size:12px;color:var(--dim)">on</span>
+                <input type="number" min="0" max="64" value="{{ patOff }}" onChange="{{ onPatOff }}" aria-label="Bars off" style="width:70px;height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);text-align:center;font-size:16px;outline:none">
+                <span style="font-size:12px;color:var(--dim)">off</span>
+              </div>
+            </sc-if>
+          </section>
+
+          <section style="padding:20px 0 22px;border-top:1px solid var(--line)">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">POLYRHYTHM</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ polyChips }}" as="c" hint-placeholder-count="9">
+                <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ polyCustom }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+                <input type="number" min="2" max="16" value="{{ polyX }}" onChange="{{ onPolyX }}" aria-label="Poly pulses" style="width:70px;height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);text-align:center;font-size:16px;outline:none">
+                <span style="font-size:12px;color:var(--dim)">in the time of</span>
+                <input type="number" min="1" max="16" value="{{ polyY }}" onChange="{{ onPolyY }}" aria-label="Main pulses" style="width:70px;height:42px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);text-align:center;font-size:16px;outline:none">
+              </div>
+            </sc-if>
+            <div style="font-size:11px;color:var(--dim);margin-top:12px;line-height:1.55;text-wrap:pretty">{{ polyNote }}</div>
+          </section>
+
+          <section style="padding:20px 0 22px;border-top:1px solid var(--line)">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">COUNT-IN</div>
+            <div style="display:flex;gap:8px">
+              <sc-for list="{{ countChips }}" as="c" hint-placeholder-count="5">
+                <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+          </section>
+
+          <section style="padding:20px 0 22px;border-top:1px solid var(--line)">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">MAIN METER</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ mainSoundChips }}" as="c" hint-placeholder-count="14">
+                <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:16px">
+              <span style="font-size:11px;letter-spacing:.14em;color:var(--faint);width:58px">VOLUME</span>
+              <input type="range" min="0" max="1" step="0.01" value="{{ mainVol }}" onChange="{{ onMainVol }}" aria-label="Main volume" style="flex:1;accent-color:var(--acc);height:26px">
+            </div>
+          </section>
+
+          <section style="padding:20px 0 22px;border-top:1px solid var(--line)">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">POLY METER</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ polySoundChips }}" as="c" hint-placeholder-count="14">
+                <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:16px">
+              <span style="font-size:11px;letter-spacing:.14em;color:var(--faint);width:58px">VOLUME</span>
+              <input type="range" min="0" max="1" step="0.01" value="{{ polyVol }}" onChange="{{ onPolyVol }}" aria-label="Poly volume" style="flex:1;accent-color:var(--acc);height:26px">
+            </div>
+          </section>
+
+          <section style="padding:20px 0 22px;border-top:1px solid var(--line)">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint);margin-bottom:12px">OUTPUT</div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="font-size:11px;letter-spacing:.14em;color:var(--faint);width:58px">MASTER</span>
+              <input type="range" min="0" max="1" step="0.01" value="{{ masterVol }}" onChange="{{ onMasterVol }}" aria-label="Master volume" style="flex:1;accent-color:var(--acc);height:26px">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px;margin-top:8px">
+              <sc-for list="{{ switches }}" as="c" hint-placeholder-count="3">
+                <button onClick="{{ c.on }}" aria-pressed="{{ c.active }}" style="display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;padding:13px 0;text-align:left">
+                  <span style="display:flex;flex-direction:column;gap:3px">
+                    <span style="font-size:14px">{{ c.label }}</span>
+                    <span style="font-size:11px;color:var(--faint)">{{ c.hint }}</span>
+                  </span>
+                  <span style="{{ c.track }}"><span style="{{ c.knob }}"></span></span>
+                </button>
+              </sc-for>
+            </div>
+          </section>
+
+          <section style="padding:20px 0 10px;border-top:1px solid var(--line)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div style="font-size:10px;letter-spacing:.2em;color:var(--faint)">PRESETS</div>
+              <button onClick="{{ savePreset }}" style="font-size:11px;letter-spacing:.14em;font-weight:600;color:var(--acc)">SAVE CURRENT</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ presetRows }}" as="p" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:9px 10px 9px 12px">
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+                    <input type="text" value="{{ p.name }}" onChange="{{ p.rename }}" aria-label="Preset name" style="width:100%;background:transparent;border:1px solid transparent;border-radius:7px;font-size:14px;font-weight:500;padding:3px 5px;margin-left:-5px;outline:none">
+                    <span style="font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums">{{ p.meta }}</span>
+                  </div>
+                  <button onClick="{{ p.load }}" style="font-size:10px;letter-spacing:.12em;color:var(--acc);font-weight:600;padding:8px 6px">LOAD</button>
+                  <button onClick="{{ p.toSection }}" title="Turn this preset into a song section" style="font-size:10px;letter-spacing:.12em;color:var(--dim);padding:8px 6px">→ SONG</button>
+                  <button onClick="{{ p.del }}" aria-label="Delete preset" style="font-size:14px;color:var(--faint);padding:8px 6px;line-height:1">×</button>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ noPresets }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12px;color:var(--faint);padding:4px 0 6px">No presets yet. A preset stores tempo, signature, accents, subdivision, pattern, polyrhythm, sounds, volumes and count-in.</div>
+            </sc-if>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ songOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePanel }}" style="position:fixed;inset:0;z-index:80;display:flex;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(2px)">
+      <div onClick="{{ swallow }}" style="width:100%;max-width:452px;height:100%;background:var(--bg);border-left:1px solid var(--line);border-right:1px solid var(--line);display:flex;flex-direction:column;animation:pdl-rise 170ms ease-out">
+
+        <div style="flex:none;padding:calc(18px + env(safe-area-inset-top)) 20px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-family:var(--font-display);font-size:14px;letter-spacing:.3em">SONG MODE</div>
+            <button onClick="{{ closePanel }}" style="font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:600;padding:6px 0">DONE</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="text" value="{{ songName }}" onChange="{{ onSongName }}" aria-label="Song name" style="flex:1;min-width:0;height:40px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:0 12px;font-size:15px;font-weight:500;outline:none">
+            <sc-for list="{{ loopChips }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+          <div data-r="barmap" onPointerDown="{{ mapDown }}" style="position:relative;height:26px;display:flex;gap:1px;align-items:stretch;cursor:pointer;touch-action:none">
+            <sc-for list="{{ barTicks }}" as="t" hint-placeholder-count="16">
+              <div style="{{ t.style }}"></div>
+            </sc-for>
+            <div data-r="playhead" style="position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink);left:0;display:none"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:.06em;color:var(--dim);font-variant-numeric:tabular-nums">
+            <span data-r="secname">{{ songSummary }}</span>
+            <span data-r="clock">{{ songClock }}</span>
+          </div>
+        </div>
+
+        <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ sectionRows }}" as="s" hint-placeholder-count="2">
+            <div draggable="true" onDragStart="{{ s.dragStart }}" onDragOver="{{ s.dragOver }}" onDrop="{{ s.drop }}" style="{{ s.card }}">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:14px;color:var(--faint);cursor:grab;line-height:1">≡</span>
+                <input type="text" value="{{ s.name }}" onChange="{{ s.onName }}" aria-label="Section name" style="flex:1;min-width:0;background:transparent;border:1px solid transparent;border-radius:7px;padding:3px 5px;margin-left:-3px;font-size:14px;font-weight:600;outline:none">
+                <span style="font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums">{{ s.dur }}</span>
+                <button onClick="{{ s.up }}" aria-label="Move up" style="font-size:12px;color:var(--faint);padding:5px 3px">↑</button>
+                <button onClick="{{ s.down }}" aria-label="Move down" style="font-size:12px;color:var(--faint);padding:5px 3px">↓</button>
+                <button onClick="{{ s.dup }}" aria-label="Duplicate" style="font-size:12px;color:var(--faint);padding:5px 3px">⧉</button>
+                <button onClick="{{ s.del }}" aria-label="Delete section" style="font-size:14px;color:var(--faint);padding:5px 3px;line-height:1">×</button>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:7px">
+                <sc-for list="{{ s.fields }}" as="f" hint-placeholder-count="6">
+                  <label style="display:flex;flex-direction:column;gap:3px">
+                    <span style="font-size:9px;letter-spacing:.13em;color:var(--faint)">{{ f.label }}</span>
+                    <input type="text" inputmode="{{ f.mode }}" value="{{ f.value }}" onChange="{{ f.on }}" placeholder="{{ f.ph }}" style="{{ f.style }}">
+                  </label>
+                </sc-for>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <select value="{{ s.noteValue }}" onChange="{{ s.onNote }}" aria-label="Note value" style="flex:1;min-width:0;height:38px;border-radius:10px;background:var(--panel);border:1px solid var(--line);font-size:13px;padding:0 10px;outline:none">
+                  <sc-for list="{{ s.noteOpts }}" as="o" hint-placeholder-count="13">
+                    <option value="{{ o.k }}" disabled="{{ o.dis }}">{{ o.label }}</option>
+                  </sc-for>
+                </select>
+                <span style="font-size:10px;letter-spacing:.08em;color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums">{{ s.ppbText }}</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+                <sc-for list="{{ s.dots }}" as="d" hint-placeholder-count="4">
+                  <button onClick="{{ d.tap }}" aria-label="{{ d.label }}" style="{{ d.style }}"></button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+
+          <div style="display:flex;gap:8px;margin-top:2px">
+            <button onClick="{{ addSection }}" style="flex:1;height:44px;border-radius:12px;background:var(--chip);border:1px dashed var(--line2);font-size:12px;letter-spacing:.16em;font-weight:600;color:var(--dim)">+ SECTION</button>
+            <button onClick="{{ toggleRamp }}" style="flex:1;height:44px;border-radius:12px;background:var(--chip);border:1px dashed var(--line2);font-size:12px;letter-spacing:.16em;font-weight:600;color:var(--dim)">STEPPED RAMP</button>
+          </div>
+
+          <sc-if value="{{ rampOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:10px;letter-spacing:.18em;color:var(--faint)">STEPPED RAMP GENERATOR</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <sc-for list="{{ rampFields }}" as="f" hint-placeholder-count="4">
+                  <label style="display:flex;flex-direction:column;gap:3px">
+                    <span style="font-size:9px;letter-spacing:.13em;color:var(--faint)">{{ f.label }}</span>
+                    <input type="text" inputmode="decimal" value="{{ f.value }}" onChange="{{ f.on }}" style="width:78px;height:40px;border-radius:10px;background:var(--panel);border:1px solid var(--line);text-align:center;font-size:15px;outline:none">
+                  </label>
+                </sc-for>
+              </div>
+              <div style="font-size:11px;color:var(--dim)">{{ rampSummary }}</div>
+              <button onClick="{{ generateRamp }}" style="height:42px;border-radius:11px;background:var(--acc);color:#fff;font-size:12px;letter-spacing:.18em;font-weight:700">GENERATE SECTIONS</button>
+            </div>
+          </sc-if>
+
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 2px 2px;border-top:1px solid var(--line);margin-top:6px">
+            <span style="font-size:10px;letter-spacing:.18em;color:var(--faint)">TOTAL</span>
+            <span style="font-size:14px;font-weight:600;font-variant-numeric:tabular-nums">{{ totalText }}</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:1px solid var(--line);margin-top:6px">
+            <div style="font-size:10px;letter-spacing:.2em;color:var(--faint)">START FROM AN EXAMPLE</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ exampleChips }}" as="c" hint-placeholder-count="3">
+                <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;padding-top:16px;border-top:1px solid var(--line);margin-top:6px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-size:10px;letter-spacing:.2em;color:var(--faint)">LIBRARY</div>
+              <button onClick="{{ saveSong }}" style="font-size:11px;letter-spacing:.14em;font-weight:600;color:var(--acc)">SAVE SONG</button>
+            </div>
+            <sc-for list="{{ songRows }}" as="p" hint-placeholder-count="1">
+              <div style="display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:9px 10px 9px 12px">
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+                  <input type="text" value="{{ p.name }}" onChange="{{ p.rename }}" aria-label="Song name" style="width:100%;background:transparent;border:1px solid transparent;border-radius:7px;font-size:14px;font-weight:500;padding:3px 5px;margin-left:-5px;outline:none">
+                  <span style="font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums">{{ p.meta }}</span>
+                </div>
+                <button onClick="{{ p.load }}" style="font-size:10px;letter-spacing:.12em;color:var(--acc);font-weight:600;padding:8px 6px">LOAD</button>
+                <button onClick="{{ p.dup }}" style="font-size:10px;letter-spacing:.12em;color:var(--dim);padding:8px 6px">COPY</button>
+                <button onClick="{{ p.del }}" aria-label="Delete song" style="font-size:14px;color:var(--faint);padding:8px 6px;line-height:1">×</button>
+              </div>
+            </sc-for>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button onClick="{{ exportSong }}" style="flex:1;height:42px;border-radius:11px;background:var(--chip);border:1px solid var(--line);font-size:11px;letter-spacing:.16em;font-weight:600;color:var(--dim)">EXPORT JSON</button>
+              <label style="flex:1;height:42px;border-radius:11px;background:var(--chip);border:1px solid var(--line);font-size:11px;letter-spacing:.16em;font-weight:600;color:var(--dim);display:grid;place-items:center;cursor:pointer">IMPORT JSON
+                <input type="file" accept="application/json,.json" onChange="{{ importSong }}" style="display:none">
+              </label>
+            </div>
+            <div style="font-size:11px;color:var(--faint);line-height:1.5">Presets hold one setting stack; songs hold a section list. Any preset can be pushed here with “→ SONG”.</div>
+          </div>
+        </div>
+
+        <div style="flex:none;display:flex;align-items:center;gap:10px;padding:12px 20px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--panel)">
+          <button onClick="{{ toggleSongMode }}" aria-pressed="{{ songMode }}" style="{{ songModeStyle }}">{{ songModeLabel }}</button>
+          <button onClick="{{ toggleRun }}" style="{{ songStartStyle }}">{{ startLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ supportOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePanel }}" style="position:fixed;inset:0;z-index:80;display:flex;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(2px)">
+      <div onClick="{{ swallow }}" style="width:100%;max-width:452px;height:100%;background:var(--bg);border-left:1px solid var(--line);border-right:1px solid var(--line);display:flex;flex-direction:column;animation:pdl-rise 170ms ease-out">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(18px + env(safe-area-inset-top)) 20px 14px;border-bottom:1px solid var(--line);flex:none">
+          <div style="font-family:var(--font-display);font-size:14px;letter-spacing:.3em">SUPPORT</div>
+          <button onClick="{{ closePanel }}" style="font-size:11px;letter-spacing:.2em;color:var(--acc);font-weight:600;padding:6px 0">DONE</button>
+        </div>
+        <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:22px 20px calc(30px + env(safe-area-inset-bottom))">
+          <p style="font-size:14px;line-height:1.6;color:var(--dim);margin:0 0 20px;text-wrap:pretty">Pendulum is free and always will be. If it has helped your practice and you feel like it, you can send anything you like. Completely optional.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <sc-for list="{{ tipChips }}" as="c" hint-placeholder-count="5">
+              <button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:22px">
+            <div style="background:#fff;padding:12px;border-radius:16px;width:100%;max-width:248px">
+              <img src="qr-upi.png" alt="UPI QR code for acoustics1990@okhdfcbank" width="224" height="224" style="display:block;width:100%;height:auto;border-radius:6px">
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center">
+              <span style="font-size:12px;color:var(--dim)">Scan with any UPI app on your phone.</span>
+              <span style="font-size:13px;font-weight:600;letter-spacing:.01em">acoustics1990@okhdfcbank</span>
+              <span style="font-size:11px;color:var(--faint);margin-top:2px">The code carries the ID only — type the amount in your UPI app.</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:22px">
+            <button onClick="{{ copyUpi }}" style="flex:1;height:52px;border-radius:14px;background:var(--chip);border:1px solid var(--line2);font-size:12px;letter-spacing:.16em;font-weight:600">COPY UPI ID</button>
+            <button onClick="{{ openUpi }}" style="{{ tipPayStyle }}">{{ tipPayLabel }}</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:18px">
+            <label for="tip-amount" style="font-size:11px;letter-spacing:.14em;color:var(--faint)">OR SET YOUR OWN AMOUNT</label>
+            <input id="tip-amount" type="number" inputmode="decimal" min="1" step="1" value="{{ tipCustom }}" onChange="{{ onTipCustom }}" placeholder="Amount in rupees" style="height:48px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);padding:0 14px;font-size:15px;outline:none;width:100%">
+          </div>
+          <p style="font-size:11px;line-height:1.6;color:var(--faint);margin:22px 0 0;text-wrap:pretty">No accounts, no ads, no tracking. Nothing in Pendulum is locked behind a payment.</p>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line2);color:var(--ink);padding:11px 18px;border-radius:12px;font-size:13px;z-index:90;animation:pdl-fade 140ms ease-out;box-shadow:0 8px 30px rgba(0,0,0,.4)">{{ toast }}</div>
+  </sc-if>
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#08080b"></rect><circle cx="50" cy="50" r="28" fill="none" stroke="#ea0093" stroke-width="7"></circle><circle cx="50" cy="50" r="8" fill="#4a3ec0"></circle></svg></template>
+  <sc-if value="{{ installable }}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{ install }}" style="position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);background:var(--acc);color:#fff;padding:9px 16px;border-radius:999px;font-size:12px;letter-spacing:.1em;font-weight:600;z-index:90">INSTALL PENDULUM</button>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ea0093&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#ea0093&quot;,&quot;#4a3ec0&quot;,&quot;#e8b400&quot;,&quot;#22c08a&quot;],&quot;section&quot;:&quot;Look&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;dark&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Look&quot;}}">
+const SOUND_NAMES=['Classic','Wood Block','Hi-Hat','Cowbell','Digital','Soft','Rimshot','Kick','Claves','Bell','Shaker','Stick Click','Snare','Tom'];
+const MARKINGS=[[25,'Grave'],[40,'Largo'],[60,'Larghetto'],[66,'Adagio'],[76,'Andante'],[108,'Moderato'],[120,'Allegro'],[156,'Vivace'],[168,'Presto'],[200,'Prestissimo']];
+const marking=b=>{let n='Larghissimo';for(const [v,l] of MARKINGS) if(b>=v) n=l;return n;};
+const NOTE_VALUES=[['Whole','whole',4],['Dotted half','dhalf',3],['Half','half',2],['Dotted quarter','dquarter',1.5],['Quarter','quarter',1],['Quarter triplet','tquarter',2/3],['Dotted eighth','d8th',.75],['Eighth','8th',.5],['Eighth triplet','t8th',1/3],['Dotted sixteenth','d16th',.375],['Sixteenth','16th',.25],['Sixteenth triplet','t16th',1/6],['Thirty-second','32nd',.125]];
+const NV=Object.fromEntries(NOTE_VALUES.map(([,k,m])=>[k,m]));
+const NV_LABEL=Object.fromEntries(NOTE_VALUES.map(([l,k])=>[k,l]));
+const DEN_NOTE={1:'whole',2:'half',4:'quarter',8:'8th',16:'16th',32:'32nd'};
+const denNote=den=>DEN_NOTE[den]||'quarter';
+const pulseSec=bpm=>60/bpm;
+// null when the note value does not divide the bar evenly. The tolerance is required:
+// 1/3 and 1/6 are inexact in binary, so triplets fail a strict integer test.
+function pulsesPerBar(num,den,nv){
+  const m=NV[nv];if(!m) return null;
+  const raw=(num*4/den)/m,r=Math.round(raw);
+  return (r>=1&&Math.abs(raw-r)<1e-9)?r:null;
+}
+const ppbSafe=(num,den,nv)=>pulsesPerBar(num,den,nv)??pulsesPerBar(num,den,denNote(den))??Math.max(1,num);
+const SWING_SUBDIV={'8th':2,'16th':4};
+// Fractions of ONE PULSE where each subdivision sits; pulses themselves never move.
+function subOffsets(subdiv,mode,amount){
+  if(mode==='off'||SWING_SUBDIV[mode]!==subdiv) return Array.from({length:subdiv},(_,i)=>i/subdiv);
+  const r=amount/100,pairs=subdiv/2,span=1/pairs,out=[];
+  for(let p=0;p<pairs;p++){out.push(p*span);out.push(p*span+span*r);}
+  return out;
+}
+const slotDurs=offs=>offs.map((o,i)=>(i+1<offs.length?offs[i+1]:1)-o);
+function resizeStates(old,n){
+  const st=Array.from({length:n},(_,i)=>(old&&old[i]!==undefined)?old[i]:0);
+  if(!st.some(x=>x===1)) st[0]=1;
+  return st;
+}
+const clampBpm=(v,d=1)=>{const f=10**d;return Math.min(400,Math.max(10,Math.round(v*f)/f));};
+const cycleState=s=>(s+1)%3;
+const defaultStates=num=>Array.from({length:num},(_,i)=>i===0?1:0);
+function statesFromGrouping(num,str){
+  const g=String(str).split('+').map(s=>parseInt(s.trim(),10));
+  if(g.some(isNaN)||g.reduce((a,b)=>a+b,0)!==num) return null;
+  const st=Array(num).fill(0); let i=0;
+  for(const x of g){st[i]=1;i+=x;}
+  return st;
+}
+function groupingFromStates(st){
+  const idx=st.map((s,i)=>s===1?i:-1).filter(i=>i>=0);
+  if(!idx.length||idx[0]!==0) return null;
+  const g=[];
+  for(let i=0;i<idx.length;i++) g.push((idx[i+1]??st.length)-idx[i]);
+  return g.join('+');
+}
+function isMuted(bar,p){if(!p) return false;const c=p.on+p.off;return c>0&&(bar%c)>=p.on;}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const silentBar=(seed,bar,pct)=>mulberry32(seed+bar*2654435761)()<pct/100;
+function tapTempo(taps){
+  const r=taps.slice(-5),g=[];
+  for(let i=1;i<r.length;i++){const d=r[i]-r[i-1];if(d>0&&d<=2)g.push(d);}
+  if(!g.length) return null;
+  const s=[...g].sort((a,b)=>a-b);
+  const m=s.length%2?s[(s.length-1)/2]:(s[s.length/2-1]+s[s.length/2])/2;
+  return clampBpm(60/m);
+}
+function buildTimeline(sections,swing,loop){
+  const ev=[];let t=0,bar=0;
+  const sw=swing||{mode:'off',amount:50};
+  for(let L=0;L<loop;L++) for(const s of sections) for(let r=0;r<(s.repeat||1);r++){
+    const nv=s.noteValue||denNote(s.den);
+    const ppb=ppbSafe(s.num,s.den,nv);
+    const tb=s.bars*ppb;
+    const states=s.states&&s.states.length===ppb?s.states:defaultStates(ppb);
+    const sd=Math.max(1,s.subdiv||1);
+    const offs=subOffsets(sd,sw.mode,sw.amount);
+    for(let b=0;b<s.bars;b++){
+      const barMuted=isMuted(bar,s.pattern)||(s.randomPct?silentBar(s.seed||1,bar,s.randomPct):false);
+      const barStart=t;
+      for(let n=0;n<ppb;n++){
+        const i=b*ppb+n,f=tb>1?i/(tb-1):0;
+        const bpm=s.bpmEnd!=null?s.bpm+(s.bpmEnd-s.bpm)*f:s.bpm;
+        const d=pulseSec(bpm);
+        const st=states[n];
+        ev.push({t,k:'main',a:st===1?(n===0?2:1):0,bar,beat:n+1,sig:s.num+'/'+s.den,nv,bpm,muted:barMuted||st===2,sec:s.id,secBar:b});
+        for(let j=1;j<sd;j++) ev.push({t:t+d*offs[j],k:'sub',sj:j,a:0,bar,beat:n+1,muted:barMuted||st===2,sec:s.id,secBar:b});
+        t+=d;
+      }
+      if(s.poly&&s.poly.x>1){
+        // X pulses per Y main pulses, laid over this bar's own pulse grid.
+        const py=Math.max(1,s.poly.y||1),px=s.poly.x;
+        const step=(t-barStart)/ppb*py/px;
+        const n=Math.round(ppb/py*px);
+        for(let p=0;p<n;p++) ev.push({t:barStart+step*p,k:'poly',a:p%px===0?2:0,bar,pi:p%px,muted:barMuted,sec:s.id,secBar:b});
+      }
+      bar++;
+    }
+  }
+  ev.sort((a,b)=>a.t-b.t);
+  return {events:ev,duration:t,bars:bar};
+}
+const LSK='pendulm.v1';
+const lsGet=()=>{try{return JSON.parse(localStorage.getItem(LSK)||'{}')||{};}catch(e){return {};}};
+const lsSet=o=>{try{localStorage.setItem(LSK,JSON.stringify(o));}catch(e){}};
+const SILENT_WAV='data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+const PERSIST=['bpm','decimals','num','den','states','subdiv','subLabel','noteValue','swingMode','swingAmount','patternKey','patOn','patOff','randomPct','polyKey','polyX','polyY','countIn','mainSound','polySound','mainVol','polyVol','masterVol','silentMode','keepAwake','theme','reduceMotion','presets','songs','song','songMode'];
+
+class Component extends DCLogic {
+  state={
+    bpm:120,decimals:false,num:4,den:4,states:[1,0,0,0],
+    subdiv:1,subLabel:'Quarter',noteValue:'quarter',swingMode:'off',swingAmount:200/3,
+    patternKey:'always',patOn:1,patOff:1,randomPct:30,seed:7,
+    polyKey:'off',polyX:3,polyY:2,countIn:0,
+    mainSound:'Classic',polySound:'Wood Block',
+    mainVol:.9,polyVol:.65,masterVol:.9,silentMode:false,
+    keepAwake:true,theme:'dark',reduceMotion:false,
+    running:false,panel:null,editingBpm:false,bpmDraft:'',
+    presets:[],songs:[],song:null,songMode:false,tipAmount:null,tipCustom:'',
+    toast:null,installable:false
+  };
+
+  /* ---------- lifecycle ---------- */
+  componentDidMount(){
+    this.taps=[];this.vq=[];this.flash=0;this.flashKind=0;this.activeDot=-1;this.activePoly=-1;
+    window.__pdl={buildTimeline,pulseSec,pulsesPerBar,ppbSafe,subOffsets,slotDurs,resizeStates,NV,NOTE_VALUES,
+      clampBpm,statesFromGrouping,groupingFromStates,silentBar,tapTempo,defaultStates,marking,app:this};
+    const saved=lsGet();const patch={};
+    for(const k of PERSIST) if(saved[k]!==undefined) patch[k]=saved[k];
+    const clamped=this.migrate(patch,saved);
+    if(clamped) setTimeout(()=>this.toast('Tempo clamped to 300 BPM by the note-value migration'),900);
+    if(!patch.song) patch.song=this.blankSong();
+    if(this.props.theme&&saved.theme===undefined) patch.theme=this.props.theme;
+    this.setState(patch,()=>{this.applyTheme();this.syncSlider();});
+    this.applyTheme();
+    this.onKey=e=>{
+      const t=e.target,tag=t&&t.tagName;
+      if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA') return;
+      if(e.code==='Space'){e.preventDefault();this.toggleRun();}
+      else if(e.key==='t'||e.key==='T'){e.preventDefault();this.tap();}
+      else if(e.key==='Escape'&&this.state.panel){this.setState({panel:null});}
+    };
+    window.addEventListener('keydown',this.onKey);
+    this.onVis=()=>{
+      if(document.visibilityState==='visible'){
+        if(this.ctx&&this.ctx.state==='suspended') this.ctx.resume();
+        if(this.playing) this.requestWake();
+      }
+    };
+    document.addEventListener('visibilitychange',this.onVis);
+    this.onInstall=e=>{e.preventDefault();this.deferred=e;this.setState({installable:true});};
+    window.addEventListener('beforeinstallprompt',this.onInstall);
+    this.raf=requestAnimationFrame(this.frame);
+    this.syncSwing();
+    if(location.protocol.startsWith('http')){
+      // The offline bundler rewrites these to blob: URLs; iOS needs real files for the home-screen icon.
+      const refs=[['link[rel="apple-touch-icon"]','apple-touch-icon.png'],['link[rel="icon"][sizes="any"]','favicon.ico'],['link[rel="icon"][sizes="32x32"]','favicon-32.png']];
+      for(const [sel,href] of refs){const l=document.querySelector(sel);if(l&&l.getAttribute('href')!==href) l.setAttribute('href',href);}
+      if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+    }
+    this.syncSlider();
+  }
+  componentWillUnmount(){
+    window.removeEventListener('keydown',this.onKey);
+    document.removeEventListener('visibilitychange',this.onVis);
+    window.removeEventListener('beforeinstallprompt',this.onInstall);
+    cancelAnimationFrame(this.raf);
+    this.hardStop();
+  }
+  componentDidUpdate(){
+    const s=this.state,p=this._prev||{};
+    if(p.theme!==s.theme||p.accent!==this.props.accent) this.applyTheme();
+    if(p.bpm!==s.bpm) this.syncSlider();
+    if(this.master&&p.masterVol!==s.masterVol) this.master.gain.value=s.masterVol;
+    if(p.swingAmount!==s.swingAmount||p.swingMode!==s.swingMode||p.subdiv!==s.subdiv||p.panel!==s.panel) this.syncSwing();
+    // Re-phase the poly cycle so a live edit lands on a cycle start rather than mid-cycle.
+    // Any change to the pulse grid counts, not just the ratio: tempo, signature and note
+    // value all move the grid the poly clock is supposed to be locked to.
+    {
+      const gridChanged=p.bpm!==s.bpm||p.num!==s.num||p.den!==s.den||p.noteValue!==s.noteValue;
+      const ratioChanged=p.polyKey!==s.polyKey||p.polyX!==s.polyX||p.polyY!==s.polyY;
+      if(this.playing&&this.g&&(gridChanged||ratioChanged)) this.resnapPoly(ratioChanged);
+    }
+    this._prev={theme:s.theme,bpm:s.bpm,masterVol:s.masterVol,accent:this.props.accent,
+      swingAmount:s.swingAmount,swingMode:s.swingMode,subdiv:s.subdiv,panel:s.panel,
+      polyKey:s.polyKey,polyX:s.polyX,polyY:s.polyY,
+      num:s.num,den:s.den,noteValue:s.noteValue};
+    const o={};for(const k of PERSIST) o[k]=s[k];
+    clearTimeout(this._save);this._save=setTimeout(()=>lsSet(o),250);
+  }
+  applyTheme(){
+    document.documentElement.setAttribute('data-pdl-theme',this.state.theme);
+    const el=this.el('root');
+    if(el&&this.props.accent) el.style.setProperty('--acc',this.props.accent);
+    if(this.props.accent) document.documentElement.style.setProperty('--acc',this.props.accent);
+  }
+  el(n){return this.rootEl?this.rootEl.querySelector('[data-r="'+n+'"]'):(this.rootEl=document.querySelector('[data-r="root"]'))&&this.rootEl.querySelector('[data-r="'+n+'"]');}
+  toast(msg){clearTimeout(this._t);this.setState({toast:msg});this._t=setTimeout(()=>this.setState({toast:null}),1800);}
+  blankSong(){return {name:'Untitled song',loop:1,sections:[
+    {id:'s1',name:'A',bars:8,num:4,den:4,noteValue:'quarter',bpm:120,bpmEnd:null,subdiv:1,repeat:1,states:[1,0,0,0],pattern:null},
+    {id:'s2',name:'B',bars:8,num:3,den:4,noteValue:'quarter',bpm:120,bpmEnd:null,subdiv:1,repeat:1,states:[1,0,0],pattern:null}]};}
+
+  // Old state stored bpmMode ('denominator' | 'quarter'). Both map onto the denominator's
+  // own note value; 'quarter' additionally rescales tempo by den/4 so it sounds identical.
+  migrate(patch,saved){
+    let clamped=false;
+    const rescale=(bpm,den)=>{
+      const want=(bpm||120)*(den||4)/4,got=clampBpm(want,1);
+      if(Math.abs(got-want)>.05) clamped=true;
+      return got;
+    };
+    const fixSec=(x,q)=>({...x,noteValue:x.noteValue||denNote(x.den||4),bpm:q?rescale(x.bpm,x.den):x.bpm});
+    if(saved&&saved.bpmMode!==undefined&&saved.noteValue===undefined){
+      const q=saved.bpmMode==='quarter',den=patch.den||4;
+      patch.noteValue=denNote(den);
+      if(q) patch.bpm=rescale(patch.bpm,den);
+      if(patch.song&&patch.song.sections) patch.song={...patch.song,sections:patch.song.sections.map(x=>fixSec(x,q))};
+      if(patch.songs) patch.songs=patch.songs.map(g=>({...g,sections:(g.sections||[]).map(x=>fixSec(x,q))}));
+    }
+    delete patch.bpmMode;
+    if(patch.presets) patch.presets=patch.presets.map(p=>{
+      const c=p.cfg;
+      if(!c||c.noteValue||c.bpmMode===undefined) return p;
+      const q=c.bpmMode==='quarter',cfg={...c,noteValue:denNote(c.den||4)};
+      if(q) cfg.bpm=rescale(c.bpm,c.den);
+      delete cfg.bpmMode;
+      return {...p,cfg};
+    });
+    return clamped;
+  }
+  ppb(){const s=this.state;return ppbSafe(s.num,s.den,s.noteValue||denNote(s.den));}
+  swing(){return {mode:this.state.swingMode||'off',amount:this.swingAmt()};}
+
+  /* ---------- audio ---------- */
+  ensureAudio(){
+    if(this.ctx) return this.ctx;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    const ctx=new AC();this.ctx=ctx;
+    this.master=ctx.createGain();this.master.gain.value=this.state.masterVol;this.master.connect(ctx.destination);
+    const len=Math.floor(ctx.sampleRate*0.6),b=ctx.createBuffer(1,len,ctx.sampleRate),d=b.getChannelData(0);
+    for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
+    this.noiseBuf=b;
+    const src="let id=null;onmessage=e=>{if(e.data==='start'){if(id)clearInterval(id);id=setInterval(()=>postMessage('tick'),25);}else{clearInterval(id);id=null;}};";
+    this.worker=new Worker(URL.createObjectURL(new Blob([src],{type:'application/javascript'})));
+    this.worker.onmessage=()=>this.scheduleAhead();
+    return ctx;
+  }
+  unlock(){
+    const ctx=this.ensureAudio();
+    if(ctx.state==='suspended') ctx.resume();
+    try{const b=ctx.createBuffer(1,1,22050),s=ctx.createBufferSource();s.buffer=b;s.connect(ctx.destination);s.start(0);}catch(e){}
+    if(!this.silentEl){
+      try{
+        const a=document.createElement('audio');
+        a.src=SILENT_WAV;a.loop=true;a.muted=true;a.setAttribute('playsinline','');a.volume=0;
+        a.play().catch(()=>{});this.silentEl=a;
+      }catch(e){}
+    }else{this.silentEl.play().catch(()=>{});}
+  }
+  osc(t,freq,dur,gain,type,endFreq){
+    const ctx=this.ctx,o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type||'sine';o.frequency.setValueAtTime(Math.max(20,freq),t);
+    if(endFreq) o.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),t+dur);
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(Math.max(.0002,gain),t+.003);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g);g.connect(this.master);o.start(t);o.stop(t+dur+.03);
+  }
+  noise(t,dur,gain,type,freq,Q){
+    const ctx=this.ctx,s=ctx.createBufferSource();s.buffer=this.noiseBuf;
+    const f=ctx.createBiquadFilter();f.type=type;f.frequency.value=freq;if(Q)f.Q.value=Q;
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(Math.max(.0002,gain),t+.002);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    s.connect(f);f.connect(g);g.connect(this.master);s.start(t);s.stop(t+dur+.03);
+  }
+  synth(name,t,vol,a,sub){
+    if(!this.ctx) return;
+    const p=sub?.76:(a===2?1.5:a===1?1.22:1);
+    const g=vol*(sub?.5:(a===2?1.25:a===1?1.08:1));
+    switch(name){
+      case 'Wood Block': this.osc(t,1150*p,.05,.45*g,'triangle',900*p);this.noise(t,.012,.10*g,'bandpass',2400*p,3);break;
+      case 'Hi-Hat': this.noise(t,.035,.42*g,'highpass',7000*(sub?.85:1),1);break;
+      case 'Cowbell': this.osc(t,540*p,.09,.26*g,'square');this.osc(t,800*p,.085,.2*g,'square');break;
+      case 'Digital': this.osc(t,880*p,.03,.4*g,'square');break;
+      case 'Soft': this.osc(t,620*p,.14,.4*g,'sine');break;
+      case 'Rimshot': this.noise(t,.03,.32*g,'bandpass',2200*p,2);this.osc(t,420*p,.03,.22*g,'triangle');break;
+      case 'Kick': this.osc(t,150*p,.14,.85*g,'sine',48);break;
+      case 'Claves': this.osc(t,2300*p,.035,.34*g,'triangle',2000*p);break;
+      case 'Bell': this.osc(t,700*p,.5,.2*g,'sine');this.osc(t,1050*p,.4,.1*g,'sine');this.osc(t,1590*p,.28,.06*g,'sine');break;
+      case 'Shaker': this.noise(t,.07,.3*g,'highpass',5200,1);break;
+      case 'Stick Click': this.noise(t,.014,.55*g,'bandpass',3200*p,1.5);break;
+      case 'Snare': this.noise(t,.11,.38*g,'highpass',1400,.8);this.osc(t,190*p,.07,.2*g,'triangle');break;
+      case 'Tom': this.osc(t,220*p,.18,.55*g,'sine',110*p);break;
+      default: this.osc(t,1000*p,.045,.45*g,'sine');this.osc(t,2000*p,.012,.14*g,'square');
+    }
+  }
+  fire(e){
+    const s=this.state;
+    if(s.silentMode) return;
+    if(e.k==='poly') this.synth(s.polySound,e.t,s.polyVol,e.a,false);
+    else if(e.k==='sub') this.synth(s.mainSound,e.t,s.mainVol,0,true);
+    else this.synth(s.mainSound,e.t,s.mainVol,e.a,false);
+  }
+
+  /* ---------- generators ---------- */
+  resetGen(startAt){
+    const s=this.state,song=s.song||this.blankSong();
+    // pbar/ppulse track the poly clock's own position in the bar, advanced step by
+    // step so a later signature change cannot renumber history retroactively.
+    this.g={t:startAt,bar:0,beat:0,q:[],pq:[],barMuted:false,countLeft:s.countIn,cbeat:0,
+            pt:startAt,pn:0,pbar:0,ppulse:0};
+    this.passesLeft=song.loop===0?Infinity:(song.loop||1);
+    this.songIdx=0;this.songBase=startAt;this.lastRel=-1;this._curSec=null;this.songRel0=0;
+    if(s.songMode){
+      this.buildSong();
+      if(this.pendingRel!=null){
+        this.songIdx=this.pendingIdx||0;
+        this.lastRel=this.pendingRel-1e-9;
+        this.songRel0=this.pendingRel;
+        this.songBase=startAt-this.pendingRel;
+        this.pendingRel=null;this.pendingIdx=null;
+      }
+    }
+  }
+  // Re-phase the poly clock onto the main grid after a live edit. Runs ONCE per
+  // transition and never per note, so steady-state accumulation is untouched.
+  // Clearing pq is load-bearing: the pending note can be LATER than the resnap
+  // target when the poly step is long, and emitting it would run the stream backwards.
+  resnapPoly(resetCycle){
+    const g=this.g;
+    if(!g) return;
+    g.pq.length=0;
+    g.pt=g.t;                                  // g.t is the next main pulse not yet queued
+    const ppb=this.ppb(),wrap=g.beat>=ppb;
+    g.pbar=wrap?g.bar+1:g.bar;
+    g.ppulse=wrap?0:g.beat;
+    if(resetCycle) g.pn=0;
+  }
+  buildSong(){
+    const s=this.state,song=s.song||this.blankSong();
+    const secs=song.sections.map(x=>({...x,pattern:x.pattern||null,seed:x.seed||s.seed}));
+    const b=buildTimeline(secs,this.swing(),1);
+    this.songEv=b.events;this.songDur=b.duration;this.songBars=b.bars;
+    return b;
+  }
+  // Deterministic per-bar mute, so the poly layer (which runs on its own clock and can
+  // cross bar lines) resolves the same answer as the main layer without sharing state.
+  barMutedAt(bar){
+    const s=this.state;
+    return isMuted(bar,this.barPattern())||(s.patternKey==='random'?silentBar(s.seed,bar,s.randomPct):false);
+  }
+  // X:Y — X evenly spaced pulses in the time of Y MAIN pulses. One poly step is therefore
+  // (Y/X) main pulses, and one cycle spans exactly Y of them, sharing the downbeat.
+  polyRatio(){
+    const s=this.state;
+    if((s.polyKey||'off')==='off') return null;
+    const x=Math.max(2,Math.min(32,s.polyX|0)),y=Math.max(1,Math.min(32,s.polyY|0));
+    return x>1?{x,y}:null;
+  }
+  barPattern(){const s=this.state;return s.patternKey==='always'?null:{on:s.patOn,off:s.patOff};}
+  pull(){
+    const s=this.state,g=this.g;
+    if(g.countLeft>0){
+      const num=this.ppb(),d=pulseSec(s.bpm);
+      const beat=g.cbeat;
+      const e={t:g.t,k:'count',a:beat===0?2:1,bar:-1,beat:beat+1,countBar:g.countLeft,muted:false};
+      g.t+=d;g.cbeat++;
+      if(g.cbeat>=num){g.cbeat=0;g.countLeft--;if(g.countLeft===0){this.songBase=g.t-this.songRel0;g.bar=0;g.beat=0;g.pt=g.t;g.pn=0;}}
+      return e;
+    }
+    return s.songMode?this.pullSong():this.pullMet();
+  }
+  pullMet(){
+    const s=this.state,g=this.g;
+    if(!g.q.length){
+      const num=this.ppb();
+      let states=s.states;
+      if(!states||states.length!==num) states=defaultStates(num);
+      if(g.beat>=num){g.beat=0;g.bar++;}
+      if(g.beat===0) g.barMuted=this.barMutedAt(g.bar);
+      const d=pulseSec(s.bpm),st=states[g.beat],sd=Math.max(1,s.subdiv);
+      const offs=subOffsets(sd,s.swingMode||'off',this.swingAmt());
+      g.q.push({t:g.t,k:'main',a:st===1?(g.beat===0?2:1):0,bar:g.bar,beat:g.beat+1,sig:s.num+'/'+s.den,bpm:s.bpm,muted:g.barMuted||st===2});
+      for(let j=1;j<sd;j++) g.q.push({t:g.t+d*offs[j],k:'sub',sj:j,a:0,bar:g.bar,beat:g.beat+1,muted:g.barMuted||st===2});
+      g.t+=d;g.beat++;
+    }
+    const r=this.polyRatio();
+    if(r&&!g.pq.length){
+      const pos=g.pn%r.x;
+      // The bar this note falls in, tracked incrementally. The old form divided TOTAL
+      // elapsed steps by the CURRENT ppb, so a signature change renumbered the past.
+      const bar=g.pbar;
+      g.pq.push({t:g.pt,k:'poly',a:pos===0?2:0,bar,pi:pos,cyc:Math.floor(g.pn/r.x),
+        muted:this.barMutedAt(bar)});
+      g.pt+=pulseSec(s.bpm)*r.y/r.x;           // expression untouched: same rounding
+      g.ppulse+=r.y/r.x;
+      const ppb=this.ppb();
+      while(g.ppulse>=ppb-1e-9){g.ppulse-=ppb;g.pbar++;}   // while: one step can span bars
+      g.pn++;
+    }
+    if(g.pq.length&&(!g.q.length||g.pq[0].t<g.q[0].t)) return g.pq.shift();
+    return g.q.shift();
+  }
+  pullSong(){
+    if(!this.songEv) this.buildSong();
+    let e=this.songEv[this.songIdx];
+    if(!e){
+      if(this.passesLeft>1){
+        this.passesLeft--;this.songBase+=this.songDur;this.songIdx=0;this.lastRel=-1;
+        e=this.songEv[0];
+        if(!e) return null;
+      }else return null;
+    }
+    this.songIdx++;this.lastRel=e.t;
+    return {...e,t:this.songBase+e.t};
+  }
+  rebuildSongLive(){
+    if(!this.playing||!this.state.songMode) return;
+    const cut=this.lastRel;
+    this.buildSong();
+    let i=this.songEv.findIndex(e=>e.t>cut);
+    this.songIdx=i<0?this.songEv.length:i;
+  }
+
+  /* ---------- transport ---------- */
+  toggleRun=()=>{this.playing?this.stop():this.start();};
+  start(){
+    const ctx=this.ensureAudio();
+    this.unlock();
+    if(ctx.state==='suspended') ctx.resume();
+    if(this.state.songMode&&!(this.state.song&&this.state.song.sections&&this.state.song.sections.length))
+      return this.toast('This song has no sections yet');
+    this.startAt=ctx.currentTime+.14;
+    this.resetGen(this.startAt);
+    this.vq=[];this.next=this.pull();
+    this.playing=true;this.ended=false;
+    this.worker.postMessage('start');
+    this.requestWake();
+    this.setState({running:true});
+    this.scheduleAhead();
+  }
+  stop(){
+    this.playing=false;
+    if(this.worker) this.worker.postMessage('stop');
+    this.vq=[];this.next=null;this.activeDot=-1;this.activePoly=-1;
+    this.releaseWake();
+    const c=this.el('count'); if(c) c.style.display='none';
+    this.clearDots();
+    this.setState({running:false});
+  }
+  hardStop(){if(this.worker){this.worker.postMessage('stop');this.worker.terminate();this.worker=null;}if(this.ctx){this.ctx.close().catch(()=>{});this.ctx=null;}}
+  scheduleAhead(){
+    if(!this.playing||!this.ctx) return;
+    const ctx=this.ctx,horizon=ctx.currentTime+.15;
+    let guard=0;
+    while(this.next&&this.next.t<horizon&&guard++<400){
+      const e=this.next;
+      if(!e.muted) this.fire(e);
+      this.vq.push(e);
+      this.next=this.pull();
+      if(!this.next){this.endAt=e.t+.4;break;}
+    }
+    if(!this.next&&this.endAt&&ctx.currentTime>this.endAt){this.stop();this.toast('Song complete');}
+  }
+  async requestWake(){
+    if(!this.state.keepAwake||!('wakeLock' in navigator)) return;
+    try{this.wake=await navigator.wakeLock.request('screen');}catch(e){}
+  }
+  releaseWake(){try{if(this.wake){this.wake.release();this.wake=null;}}catch(e){}}
+
+  /* ---------- visuals ---------- */
+  frame=()=>{
+    this.raf=requestAnimationFrame(this.frame);
+    const ctx=this.ctx;
+    if(ctx){
+      const now=ctx.currentTime;
+      while(this.vq.length&&this.vq[0].t<=now) this.paint(this.vq.shift());
+    }
+    if(this.flash>0){
+      this.flash=Math.max(0,this.flash-.055);
+      const ring=this.el('ring'),glow=this.el('glow'),ring2=this.el('ring2');
+      const rm=this.state.reduceMotion;
+      const amp=this.flashKind===2?.075:this.flashKind===1?.05:this.flashKind===-1?.014:.03;
+      if(ring){
+        ring.style.transform=rm?'none':'scale('+(1+amp*this.flash)+')';
+        ring.style.borderColor=this.flashKind>=1?'var(--acc)':(this.flash>.05?'var(--line2)':'var(--line)');
+      }
+      if(ring2) ring2.style.transform=rm?'none':'scale('+(1+amp*.5*this.flash)+')';
+      if(glow) glow.style.opacity=String((this.flashKind>=1?1:.5)*this.flash);
+    }
+  };
+  paint(e){
+    const dots=this.el('dots');
+    if(e.k==='count'){
+      const c=this.el('count');
+      if(c){c.style.display='grid';c.textContent=e.countBar;}
+      this.flash=1;this.flashKind=e.a;
+      return;
+    }
+    const c=this.el('count'); if(c&&c.style.display!=='none') c.style.display='none';
+    if(e.k==='poly'){
+      const pd=this.el('pdots');
+      if(pd){
+        const kids=pd.children;
+        if(this.activePoly>=0&&kids[this.activePoly]) kids[this.activePoly].style.background='var(--line2)';
+        const k=kids[e.pi!=null?e.pi:0];
+        if(k){k.style.background='var(--acc2)';this.activePoly=e.pi!=null?e.pi:0;}
+      }
+      return;
+    }
+    if(e.k==='sub'){
+      this.flash=Math.max(this.flash,.5);this.flashKind=-1;
+      if(this._flashSubs&&!this.state.reduceMotion&&e.sj!=null&&dots){
+        const k=dots.querySelector('[data-pulse="'+((e.beat||1)-1)+'"][data-sub="'+e.sj+'"] > span');
+        if(k){k.style.transform='scale(1.7)';k.style.opacity='1';
+          setTimeout(()=>{k.style.transform='scale(1)';k.style.opacity='.5';},110);}
+      }
+      return;
+    }
+    this.flash=1;this.flashKind=e.a;
+    if(dots){
+      if(this._lastDot) this._lastDot.style.transform='scale(1)';
+      const k=dots.querySelector('[data-pulse="'+((e.beat||1)-1)+'"][data-sub="-1"] > span');
+      if(k){k.style.transform=this.state.reduceMotion?'scale(1)':'scale(1.55)';this._lastDot=k;}
+    }
+    const live=this.el('live');
+    if(live) live.textContent='BAR '+(e.bar+1)+'  ·  BEAT '+e.beat+'  ·  '+(e.sig||this.state.num+'/'+this.state.den)+(e.muted?'  ·  SILENT':'');
+    if(this.state.songMode&&e.bpm!=null){
+      const b=this.el('bpmv');
+      if(b) b.textContent=this.state.decimals?e.bpm.toFixed(1):String(Math.round(e.bpm));
+    }
+    if(this.state.songMode&&e.sec!=null) this.paintSong(e);
+  }
+  paintSong(e){
+    const sec=(this.state.song.sections||[]).find(x=>x.id===e.sec);
+    const rel=e.t-this.songBase;
+    const nm=this.el('secname');
+    if(nm&&sec) nm.textContent=sec.name+' · bar '+(e.secBar+1)+'/'+sec.bars+' · song bar '+(e.bar+1)+' · '+(e.sig||'');
+    const clk=this.el('clock');
+    if(clk&&this.songDur) clk.textContent=this.fmt(rel)+' / '+this.fmt(this.songDur)+' · −'+this.fmt(Math.max(0,this.songDur-rel));
+    const ph=this.el('playhead');
+    if(ph&&this.songDur){ph.style.display='block';ph.style.left=Math.min(100,rel/this.songDur*100)+'%';}
+    if(e.bpm!=null){const mk=this.el('marking');if(mk) mk.textContent=marking(e.bpm*(NV[e.nv]??1));}
+    if(sec&&this._curSec!==e.sec){
+      this._curSec=e.sec;
+      const ppb=ppbSafe(sec.num,sec.den,sec.noteValue||denNote(sec.den));
+      this.viewStates=sec.states&&sec.states.length===ppb?sec.states:defaultStates(ppb);
+      this.viewSig=sec.num+'/'+sec.den;
+      this.viewSubdiv=Math.max(1,sec.subdiv||1);
+      this.viewNv=sec.noteValue||denNote(sec.den);
+      this.forceUpdate();
+    }
+  }
+  clearDots(){
+    const d=this.el('dots');
+    if(d) for(const k of d.querySelectorAll('span')) k.style.transform='scale(1)';
+    this._lastDot=null;
+    const p=this.el('pdots');
+    if(p) for(const k of p.children) k.style.background='var(--line2)';
+    const l=this.el('live'); if(l) l.textContent='';
+    const r=this.el('ring'),g=this.el('glow'),r2=this.el('ring2');
+    if(r){r.style.transform='none';r.style.borderColor='var(--line)';}
+    if(r2) r2.style.transform='none';
+    if(g) g.style.opacity='0';
+  }
+
+  /* ---------- tempo controls ---------- */
+  setBpm=v=>{this.setState({bpm:clampBpm(v,this.state.decimals?1:0)});};
+  syncSlider(){
+    const f=this.el('fill'),k=this.el('knob');
+    const pct=Math.max(0,Math.min(1,(this.state.bpm-20)/280))*100;
+    if(f) f.style.width=pct+'%';
+    if(k) k.style.left=pct+'%';
+  }
+  sliderFromX(clientX){
+    const el=this.el('slider');if(!el) return;
+    const r=el.getBoundingClientRect();
+    const p=Math.max(0,Math.min(1,(clientX-r.left)/r.width));
+    this.setBpm(20+p*280);
+  }
+  sliderDown=e=>{
+    try{e.currentTarget.setPointerCapture(e.pointerId);}catch(err){}
+    this.sliderFromX(e.clientX);
+    const move=ev=>this.sliderFromX(ev.clientX);
+    const up=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);};
+    window.addEventListener('pointermove',move);window.addEventListener('pointerup',up);
+  };
+  sliderKey=e=>{
+    const st=this.state.decimals?.1:1;
+    if(e.key==='ArrowRight'||e.key==='ArrowUp'){e.preventDefault();this.setBpm(this.state.bpm+st);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowDown'){e.preventDefault();this.setBpm(this.state.bpm-st);}
+  };
+  downStart=e=>{
+    const dir=Number(e.currentTarget.getAttribute('data-step'));
+    const step=()=>this.setBpm(this.state.bpm+dir*(this.state.decimals?.1:1));
+    step();
+    clearInterval(this._rep);clearTimeout(this._rept);
+    this._rept=setTimeout(()=>{this._rep=setInterval(step,70);},420);
+    const up=()=>{clearTimeout(this._rept);clearInterval(this._rep);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);};
+    window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
+  };
+  toggleDecimals=()=>{
+    const d=!this.state.decimals;
+    this.setState({decimals:d,bpm:d?this.state.bpm:clampBpm(Math.round(this.state.bpm),0)});
+  };
+  tap=()=>{
+    this.unlock();
+    const now=(this.ctx?this.ctx.currentTime:performance.now()/1000);
+    this.taps.push(now);
+    if(this.taps.length>6) this.taps.shift();
+    const v=tapTempo(this.taps);
+    if(v!=null) this.setBpm(this.state.decimals?v:Math.round(v));
+    if(!this.playing){this.flash=1;this.flashKind=1;}
+    clearTimeout(this._tapClear);
+    this._tapClear=setTimeout(()=>{this.taps=[];},2500);
+  };
+  startEditBpm=()=>{
+    this.setState({editingBpm:true,bpmDraft:String(this.state.bpm)},()=>{
+      const i=this.el('bpminput');if(i){i.focus();i.select();}
+    });
+  };
+  onBpmDraft=e=>this.setState({bpmDraft:e.target.value});
+  onBpmKey=e=>{if(e.key==='Enter'){e.preventDefault();this.commitBpm();}if(e.key==='Escape'){this.setState({editingBpm:false});}};
+  commitBpm=()=>{
+    const v=parseFloat(this.state.bpmDraft);
+    if(!isNaN(v)){
+      const d=this.state.decimals||String(this.state.bpmDraft).includes('.');
+      this.setState({bpm:clampBpm(Math.max(20,v),d?1:0),decimals:d,editingBpm:false});
+    }else this.setState({editingBpm:false});
+  };
+
+  /* ---------- beats ---------- */
+  tapBeat=i=>{
+    const st=[...this.stateArr()];
+    st[i]=cycleState(st[i]);
+    this.setState({states:st});
+  };
+  stateArr(){
+    const n=this.ppb(),s=this.state.states||[];
+    return s.length===n?s:resizeStates(s,n);
+  }
+  setNum=n=>{
+    n=Math.max(1,Math.min(32,n));
+    this.applySig(n,this.state.den);
+  };
+  // Keep note value valid across a signature change; fall back to the denominator's
+  // own note value (always valid) and resize states rather than resetting them.
+  applySig=(n,d,extra)=>{
+    const s=this.state;
+    let nv=s.noteValue||denNote(d);
+    let fell=false;
+    if(pulsesPerBar(n,d,nv)==null){nv=denNote(d);fell=true;}
+    const st=resizeStates(this.stateArr(),ppbSafe(n,d,nv));
+    this.setState({num:n,den:d,noteValue:nv,states:st,...(extra||{})});
+    if(fell) this.toast(NV_LABEL[nv]+' — '+n+'/'+d+' cannot be counted in '+NV_LABEL[s.noteValue].toLowerCase()+'s');
+  };
+  setNoteValue=nv=>{
+    const s=this.state;
+    if(pulsesPerBar(s.num,s.den,nv)==null) return;
+    this.setState({noteValue:nv,states:resizeStates(this.stateArr(),ppbSafe(s.num,s.den,nv))});
+  };
+  setSwing=mode=>{
+    const p={swingMode:mode};
+    if(mode==='8th'){p.subdiv=2;p.subLabel='Eighth';}
+    if(mode==='16th'){p.subdiv=4;p.subLabel='16th';}
+    this.setState(p,()=>{this.rebuildSongLive();this.syncSwing();});
+  };
+  /* Swing slider. Custom pointer control rather than <input type=range>: the settings sheet
+     scrolls, so the track needs touch-action:none to own the gesture; accent-color is not
+     honoured by older Safari; and the musically useful values want snap points. The live value
+     lives on the instance during a drag (swingLive) so scheduling follows the finger without a
+     setState per pixel — state is committed on release. */
+  // Triplet swing is 2:1, i.e. 200/3 %, not 67 — snapping to the exact value keeps the
+  // ratio readout honest while the label still shows a rounded 67%.
+  SWING_MIN=50; SWING_MAX=75; SWING_SNAPS=[50,200/3,75];
+  swingAmt(){const v=this.swingLive!=null?this.swingLive:(this.state.swingAmount??200/3);return Math.abs(v-67)<.001?200/3:v;}
+  swingActive(){const s=this.state,m=s.swingMode||'off';return m!=='off'&&SWING_SUBDIV[m]===Math.max(1,s.subdiv);}
+  swingPct(v){return (v-this.SWING_MIN)/(this.SWING_MAX-this.SWING_MIN)*100;}
+  swingSnap(v){
+    v=Math.max(this.SWING_MIN,Math.min(this.SWING_MAX,v));
+    for(const s of this.SWING_SNAPS) if(Math.abs(v-s)<0.85) return s;
+    return Math.round(v);
+  }
+  swingLabel(v){
+    if(v===50) return 'STRAIGHT';
+    if(Math.abs(v-200/3)<.02) return 'TRIPLET';
+    if(v===75) return 'DOTTED';
+    return 'CUSTOM';
+  }
+  swingRatio(v){return (v/(100-v)).toFixed(2);}
+  syncSwing(){
+    const v=this.swingAmt(),on=(this.state.swingMode||'off')!=='off';
+    const f=this.el('swfill'),k=this.el('swknob'),t=this.el('swtrack'),w=this.el('swwrap');
+    const val=this.el('swval'),ratio=this.el('swratio');
+    const pct=this.swingPct(v),shown=Math.round(v);
+    if(f) f.style.width=pct+'%';
+    if(k) k.style.left=pct+'%';
+    if(val) val.textContent=shown+'%';
+    if(ratio) ratio.textContent=this.swingLabel(v)+' · '+this.swingRatio(v)+' : 1';
+    if(w){w.style.opacity=on?'1':'.42';w.style.transition='opacity 140ms ease-out';}
+    if(t){
+      t.setAttribute('aria-valuenow',String(shown));
+      t.setAttribute('aria-valuetext',shown+' percent, '+this.swingLabel(v).toLowerCase()+', long to short '+this.swingRatio(v)+' to 1');
+      t.setAttribute('aria-disabled',on?'false':'true');
+      t.style.cursor=on?'pointer':'not-allowed';
+    }
+  }
+  swX(clientX){
+    const el=this.el('swtrack');if(!el) return this.swingAmt();
+    const r=el.getBoundingClientRect();
+    const p=Math.max(0,Math.min(1,(clientX-r.left)/r.width));
+    return this.swingSnap(this.SWING_MIN+p*(this.SWING_MAX-this.SWING_MIN));
+  }
+  swDown=e=>{
+    if((this.state.swingMode||'off')==='off') return this.toast('Turn swing on first');
+    const el=e.currentTarget;
+    try{el.focus({preventScroll:true});}catch(err){}
+    // Throws NotFoundError if the pointer is no longer active; capture is an optimisation,
+    // the window-level listeners below are what actually track the drag.
+    try{el.setPointerCapture(e.pointerId);}catch(err){}
+    const apply=cx=>{
+      const v=this.swX(cx);
+      if(v===this.swingLive) return;
+      this.swingLive=v;this.syncSwing();
+      if(this.state.songMode){clearTimeout(this._swT);this._swT=setTimeout(()=>this.rebuildSongLive(),110);}
+    };
+    apply(e.clientX);
+    const move=ev=>{ev.preventDefault();apply(ev.clientX);};
+    const up=()=>{
+      window.removeEventListener('pointermove',move);
+      window.removeEventListener('pointerup',up);
+      window.removeEventListener('pointercancel',up);
+      const v=this.swingLive;this.swingLive=null;
+      if(v!=null) this.setState({swingAmount:v},()=>{this.rebuildSongLive();this.syncSwing();});
+    };
+    window.addEventListener('pointermove',move,{passive:false});
+    window.addEventListener('pointerup',up);
+    window.addEventListener('pointercancel',up);
+  };
+  swKey=e=>{
+    if((this.state.swingMode||'off')==='off') return;
+    const v=this.swingAmt();let n=null;
+    const step=e.shiftKey?5:1;
+    if(e.key==='ArrowRight'||e.key==='ArrowUp') n=v+step;
+    else if(e.key==='ArrowLeft'||e.key==='ArrowDown') n=v-step;
+    else if(e.key==='PageUp') n=v+5;
+    else if(e.key==='PageDown') n=v-5;
+    else if(e.key==='Home') n=this.SWING_MIN;
+    else if(e.key==='End') n=this.SWING_MAX;
+    else return;
+    e.preventDefault();e.stopPropagation();
+    // Clamp and round only — routing this through swingSnap would pull a one-unit step
+    // back into the magnet it just left, so single presses at 50/75 would do nothing.
+    n=Math.max(this.SWING_MIN,Math.min(this.SWING_MAX,Math.round(n)));
+    if(Math.abs(n-67)<.001) n=200/3;
+    if(n!==v) this.setState({swingAmount:n},()=>{this.rebuildSongLive();this.syncSwing();});
+  };
+  toggleTheme=()=>this.setState({theme:this.state.theme==='dark'?'light':'dark'});
+  openSettings=()=>this.setState({panel:'settings'});
+  openSong=()=>this.setState({panel:'song'});
+  openSupport=()=>this.setState({panel:'support'});
+  navStyle(active){
+    return {flex:'1',height:'34px',borderRadius:'10px',fontSize:'10px',letterSpacing:'.16em',fontWeight:600,
+      whiteSpace:'nowrap',border:'1px solid '+(active?'var(--acc)':'transparent'),
+      background:active?'var(--acc-soft)':'var(--chip)',color:active?'var(--acc)':'var(--dim)'};
+  }
+  install=()=>{if(this.deferred){this.deferred.prompt();this.deferred=null;this.setState({installable:false});}};
+
+  /* ---------- settings ---------- */
+  closePanel=()=>this.setState({panel:null});
+  swallow=e=>e.stopPropagation();
+  chip(label,active,on){
+    return {label,active,on,style:{height:'40px',padding:'0 14px',borderRadius:'11px',fontSize:'13px',fontWeight:500,
+      whiteSpace:'nowrap',lineHeight:'38px',
+      border:'1px solid '+(active?'var(--acc)':'var(--line)'),
+      background:active?'var(--acc-soft)':'var(--chip)',
+      color:active?'var(--acc)':'var(--dim)'}};
+  }
+  setSig=(n,d)=>this.applySig(n,d,{sigCustom:false});
+  onNum=e=>this.setNum(parseInt(e.target.value,10)||1);
+  onDen=e=>this.applySig(this.state.num,parseInt(e.target.value,10)||4);
+  onSubdiv=e=>this.setState({subdiv:Math.max(2,Math.min(16,parseInt(e.target.value,10)||2)),subLabel:'Custom'});
+  onRandomPct=e=>this.setState({randomPct:Math.max(1,Math.min(100,parseInt(e.target.value,10)||1))});
+  onPatOn=e=>this.setState({patOn:Math.max(0,parseInt(e.target.value,10)||0)});
+  onPatOff=e=>this.setState({patOff:Math.max(0,parseInt(e.target.value,10)||0)});
+  onPolyX=e=>this.setState({polyX:Math.max(2,Math.min(16,parseInt(e.target.value,10)||2))});
+  onPolyY=e=>this.setState({polyY:Math.max(1,Math.min(16,parseInt(e.target.value,10)||1))});
+  onMainVol=e=>this.setState({mainVol:parseFloat(e.target.value)});
+  onPolyVol=e=>this.setState({polyVol:parseFloat(e.target.value)});
+  onMasterVol=e=>this.setState({masterVol:parseFloat(e.target.value)});
+  onGroupDraft=e=>this.setState({groupDraft:e.target.value});
+  onGroupKey=e=>{if(e.key==='Enter'){e.preventDefault();this.applyGrouping();}};
+  applyGrouping=(str)=>{
+    const s=typeof str==='string'?str:this.state.groupDraft;
+    const n=this.ppb();
+    const st=statesFromGrouping(n,s);
+    if(!st) return this.toast('Groups must add up to '+n);
+    this.setState({states:st,groupDraft:s});
+  };
+  preview=(name,vol)=>{
+    this.unlock();
+    if(this.ctx) this.synth(name,this.ctx.currentTime+.02,vol,2,false);
+  };
+  savePreset=()=>{
+    const s=this.state;
+    const p={id:'p'+Date.now(),name:s.num+'/'+s.den+' · '+(s.decimals?s.bpm.toFixed(1):Math.round(s.bpm))+' BPM',
+      cfg:{bpm:s.bpm,decimals:s.decimals,num:s.num,den:s.den,states:this.stateArr(),subdiv:s.subdiv,subLabel:s.subLabel,
+        noteValue:s.noteValue,swingMode:s.swingMode,swingAmount:s.swingAmount,
+        patternKey:s.patternKey,patOn:s.patOn,patOff:s.patOff,randomPct:s.randomPct,
+        polyKey:s.polyKey,polyX:s.polyX,polyY:s.polyY,countIn:s.countIn,
+        mainSound:s.mainSound,polySound:s.polySound,mainVol:s.mainVol,polyVol:s.polyVol}};
+    this.setState({presets:[...s.presets,p]});
+    this.toast('Preset saved');
+  };
+  loadPreset=p=>{this.setState({...p.cfg},()=>this.syncSlider());this.toast('Loaded “'+p.name+'”');};
+  renamePreset=(id,name)=>this.setState({presets:this.state.presets.map(p=>p.id===id?{...p,name}:p)});
+  delPreset=id=>this.setState({presets:this.state.presets.filter(p=>p.id!==id)});
+  presetToSection=p=>{
+    const c=p.cfg,song=this.state.song||this.blankSong();
+    const sec={id:'s'+Date.now(),name:p.name,bars:8,num:c.num,den:c.den,noteValue:c.noteValue||denNote(c.den),
+      bpm:c.bpm,bpmEnd:null,subdiv:c.subdiv,repeat:1,states:[...c.states],pattern:null};
+    this.setState({song:{...song,sections:[...song.sections,sec]},panel:'song'});
+    this.toast('Added as song section');
+  };
+  settingsVals(){
+    const s=this.state,st=this.stateArr();
+    const SIGS=[[2,2],[2,4],[3,4],[4,4],[5,4],[6,4],[3,8],[5,8],[6,8],[7,8],[9,8],[12,8]];
+    const isPreset=SIGS.some(([n,d])=>n===s.num&&d===s.den);
+    const sigChips=SIGS.map(([n,d])=>this.chip(n+'/'+d,!s.sigCustom&&n===s.num&&d===s.den,()=>this.setSig(n,d)));
+    sigChips.push(this.chip('Custom',s.sigCustom||!isPreset,()=>this.setState({sigCustom:true})));
+    const SUBS=[['Quarter',1],['Eighth',2],['Triplet 8ths',3],['16th',4],['Quintuplet',5],['Triplet 16ths',6],['Septuplet',7],['32nd',8]];
+    const subChips=SUBS.map(([l,v])=>this.chip(l,s.subLabel===l,()=>this.setState({subdiv:v,subLabel:l})));
+    subChips.push(this.chip('Custom',s.subLabel==='Custom',()=>this.setState({subLabel:'Custom',subdiv:Math.max(2,s.subdiv)})));
+    const sd0=Math.max(1,s.subdiv);
+    const gapMs=Math.min(...slotDurs(subOffsets(sd0,s.swingMode||'off',this.swingAmt())))*pulseSec(s.bpm)*1000;
+    const PATS=[['Always on','always',0,0],['1 on / 1 off','1-1',1,1],['2 on / 2 off','2-2',2,2],['3 on / 3 off','3-3',3,3],['4 on / 4 off','4-4',4,4],['8 on / 8 off','8-8',8,8]];
+    const patChips=PATS.map(([l,k,on,off])=>this.chip(l,s.patternKey===k,()=>this.setState({patternKey:k,patOn:on,patOff:off})));
+    patChips.push(this.chip('Random silent bar',s.patternKey==='random',()=>this.setState({patternKey:'random'})));
+    patChips.push(this.chip('Custom',s.patternKey==='custom',()=>this.setState({patternKey:'custom'})));
+    const POLYS=[['Off','off',0,0],['3:2','3:2',3,2],['4:3','4:3',4,3],['5:4','5:4',5,4],['3:4','3:4',3,4],['5:3','5:3',5,3],['7:8','7:8',7,8],['2:3','2:3',2,3]];
+    const polyChips=POLYS.map(([l,k,x,y])=>this.chip(l,s.polyKey===k,()=>this.setState({polyKey:k,polyX:x||s.polyX,polyY:y||s.polyY})));
+    polyChips.push(this.chip('Custom',s.polyKey==='custom',()=>this.setState({polyKey:'custom'})));
+    const pr=this.polyRatio();
+    let polyNote='Off — one layer only.';
+    if(pr){
+      // Local copies: nv/ppb are declared further down this function, so reading the outer
+      // bindings here would hit their temporal dead zone and throw during render.
+      const pnv=s.noteValue||denNote(s.den),pppb=this.ppb();
+      const gcd=(a,b)=>b?gcd(b,a%b):a;
+      const cyclesPerBar=pppb/pr.y;
+      const barsPerCycle=pr.y*pppb/gcd(pr.y,pppb)/pppb;
+      polyNote=pr.x+' evenly spaced pulses across '+pr.y+' '+NV_LABEL[pnv].toLowerCase()+
+        (pr.y===1?'':'s')+' — one poly pulse every '+(pr.y/pr.x).toFixed(3)+' main pulses ('+
+        (pulseSec(s.bpm)*pr.y/pr.x*1000).toFixed(1)+' ms). '+
+        (Number.isInteger(cyclesPerBar)
+          ? (cyclesPerBar===1?'One cycle per bar; both layers share every downbeat.'
+            :cyclesPerBar+' cycles per bar; both layers share every downbeat.')
+          : 'The cycle crosses bar lines and realigns with the downbeat every '+barsPerCycle+' bars.');
+    }
+    const countChips=[0,1,2,4,8].map(v=>this.chip(v===0?'Off':v+(v===1?' bar':' bars'),s.countIn===v,()=>this.setState({countIn:v})));
+    const nv=s.noteValue||denNote(s.den),ppb=this.ppb();
+    const noteChips=NOTE_VALUES.map(([l,k])=>{
+      const c=pulsesPerBar(s.num,s.den,k),ok=c!=null;
+      const ch=this.chip(l,ok&&nv===k,ok?(()=>this.setNoteValue(k)):(()=>{}));
+      ch.dis=!ok;
+      ch.title=ok?(c+' per '+s.num+'/'+s.den+' bar'):('does not divide a '+s.num+'/'+s.den+' bar evenly');
+      if(!ok) ch.style={...ch.style,opacity:.32,cursor:'not-allowed',color:'var(--faint)',
+        border:'1px dashed var(--line)',background:'transparent'};
+      return ch;
+    });
+    const secPer=pulseSec(s.bpm);
+    const modeExample=s.num+'/'+s.den+' at '+NV_LABEL[nv].toLowerCase()+' = '+ppb+' pulse'+(ppb===1?'':'s')+
+      ' per bar · one pulse = '+secPer.toFixed(3)+' s · bar = '+(secPer*ppb).toFixed(3)+' s';
+    const swingChips=[['Off','off'],['8th','8th'],['16th','16th']].map(([l,k])=>this.chip(l,(s.swingMode||'off')===k,()=>this.setSwing(k)));
+    const swActive=this.swingActive();
+    const amt=this.swingAmt();
+    const swingNote=(s.swingMode||'off')==='off'?'Off — every subdivision sits square on the grid. Turn on 8th or 16th to shift the second half of each pulse later.'
+      :swActive?'Pulses stay exactly on the grid; only the subdivisions between them move. Drag or use arrow keys — 50, 67 and 75 snap.'
+      :('Swing needs '+(s.swingMode==='8th'?'Eighth':'Sixteenth')+' subdivision; playing straight until then.');
+    const GROUPS={5:['3+2','2+3'],6:['3+3','2+2+2'],7:['3+2+2','2+2+3','2+3+2'],8:['3+3+2','2+3+3'],9:['3+3+3','2+2+2+3'],10:['3+3+2+2'],11:['3+3+3+2'],12:['3+3+3+3','4+4+4']};
+    const gl=GROUPS[ppb]||[Array.from({length:ppb},()=>1).join('+')];
+    const groupChips=gl.map(g=>this.chip(g,groupingFromStates(st)===g,()=>this.applyGrouping(g)));
+    const adBase={flex:'none',borderRadius:'50%',padding:0,cursor:'pointer'};
+    const accentDots=st.map((v,i)=>({i,label:'Beat '+(i+1),tap:()=>this.tapBeat(i),
+      style:v===1?{...adBase,width:'16px',height:'16px',background:'var(--acc)',border:0}
+        :v===2?{...adBase,width:'13px',height:'13px',background:'transparent',border:'1.5px solid var(--line2)'}
+        :{...adBase,width:'11px',height:'11px',background:'var(--line2)',border:0}}));
+    const sw=[
+      {key:'silentMode',label:'Silent practice',hint:'Mute the click, keep the visuals'},
+      {key:'reduceMotion',label:'Reduce motion',hint:'Color flash only, no scaling'}
+    ];
+    if('wakeLock' in navigator) sw.splice(1,0,{key:'keepAwake',label:'Keep screen awake',hint:'While playback is running'});
+    const switches=sw.map(o=>({label:o.label,hint:o.hint,active:!!s[o.key],on:()=>this.setState({[o.key]:!s[o.key]}),
+      track:{width:'44px',height:'26px',flex:'none',borderRadius:'999px',position:'relative',display:'block',
+        background:s[o.key]?'var(--acc)':'var(--line2)',transition:'background 120ms ease-out'},
+      knob:{position:'absolute',top:'3px',left:s[o.key]?'21px':'3px',width:'20px',height:'20px',borderRadius:'50%',
+        background:'#fff',transition:'left 120ms ease-out'}}));
+    const presetRows=s.presets.map(p=>({name:p.name,
+      meta:p.cfg.num+'/'+p.cfg.den+' · '+NV_LABEL[p.cfg.noteValue||denNote(p.cfg.den)].toLowerCase()+' · '+p.cfg.mainSound+' · sub '+p.cfg.subdiv+(p.cfg.countIn?' · count-in '+p.cfg.countIn:''),
+      load:()=>this.loadPreset(p),rename:e=>this.renamePreset(p.id,e.target.value),del:()=>this.delPreset(p.id),
+      toSection:()=>this.presetToSection(p)}));
+    return {
+      settingsOpen:s.panel==='settings',closePanel:this.closePanel,swallow:this.swallow,
+      sigChips,customSig:s.sigCustom||!isPreset,num:s.num,den:s.den,onNum:this.onNum,onDen:this.onDen,
+      groupReadout:groupingFromStates(st)||'—',groupDraft:s.groupDraft||'',onGroupDraft:this.onGroupDraft,
+      onGroupKey:this.onGroupKey,applyGrouping:this.applyGrouping,groupChips,
+      noteChips,modeExample,swingChips,swingNote,swDown:this.swDown,swKey:this.swKey,
+      subChips,customSub:s.subLabel==='Custom',subdiv:s.subdiv,onSubdiv:this.onSubdiv,
+      subWarn:gapMs<15?'Gap is '+gapMs.toFixed(1)+' ms — faster than most ears (and some speakers) resolve.':null,
+      patChips,patRandom:s.patternKey==='random',patCustom:s.patternKey==='custom',randomPct:s.randomPct,
+      onRandomPct:this.onRandomPct,patOn:s.patOn,patOff:s.patOff,onPatOn:this.onPatOn,onPatOff:this.onPatOff,
+      polyChips,polyCustom:s.polyKey==='custom',polyX:s.polyX,polyY:s.polyY,onPolyX:this.onPolyX,onPolyY:this.onPolyY,polyNote,
+      countChips,switches,accentDots,
+      mainSoundChips:SOUND_NAMES.map(n=>this.chip(n,s.mainSound===n,()=>{this.setState({mainSound:n});this.preview(n,s.mainVol);})),
+      polySoundChips:SOUND_NAMES.map(n=>this.chip(n,s.polySound===n,()=>{this.setState({polySound:n});this.preview(n,s.polyVol);})),
+      mainVol:s.mainVol,polyVol:s.polyVol,masterVol:s.masterVol,
+      onMainVol:this.onMainVol,onPolyVol:this.onPolyVol,onMasterVol:this.onMasterVol,
+      presetRows,noPresets:s.presets.length===0,savePreset:this.savePreset,
+      tipChips:[['Any amount',null],['₹50',50],['₹100',100],['₹250',250],['₹500',500]]
+        .map(([l,v])=>this.chip(l,(s.tipAmount??null)===v,()=>this.setTip(v))),
+      supportOpen:s.panel==='support',
+      tipCustom:s.tipCustom||'',onTipCustom:this.onTipCustom,copyUpi:this.copyUpi,openUpi:this.openUpi,
+      tipPayLabel:s.tipAmount>0?('PAY ₹'+s.tipAmount):'OPEN UPI APP',
+      tipPayStyle:{flex:'1',height:'50px',borderRadius:'14px',fontSize:'12px',letterSpacing:'.16em',fontWeight:700,
+        background:'var(--acc)',color:'#fff',border:'1px solid transparent'}
+    };
+  }
+
+  /* ---------- support ---------- */
+  UPI_ID='acoustics1990@okhdfcbank'; UPI_NAME='Rohit Mishra';
+  setTip=v=>this.setState({tipAmount:v,tipCustom:v==null?'':String(v)});
+  onTipCustom=e=>{
+    const raw=e.target.value,n=parseInt(raw,10);
+    this.setState({tipCustom:raw,tipAmount:(!isNaN(n)&&n>0)?n:null});
+  };
+  upiLink(){
+    const am=this.state.tipAmount;
+    // The VPA is left unencoded: many UPI handlers match on a literal '@'.
+    const q=['pa='+this.UPI_ID,'pn='+encodeURIComponent(this.UPI_NAME),'cu=INR'];
+    if(am>0) q.push('am='+am);
+    return 'upi://pay?'+q.join('&');
+  }
+  copyUpi=async()=>{
+    const t=this.UPI_ID;
+    try{
+      if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(t);return this.toast('UPI ID copied');}
+      throw 0;
+    }catch(e){
+      try{
+        const a=document.createElement('textarea');
+        a.value=t;a.setAttribute('readonly','');
+        a.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+        document.body.appendChild(a);a.select();a.setSelectionRange(0,t.length);
+        const ok=document.execCommand('copy');
+        a.remove();
+        this.toast(ok?'UPI ID copied':'Copy manually: '+this.UPI_ID);
+      }catch(err){this.toast('Copy manually: '+this.UPI_ID);}
+    }
+  };
+  openUpi=()=>{
+    // upi: has no web handler on desktop, so treat a page that never blurs as "no app".
+    let left=false;
+    const onBlur=()=>{left=true;};
+    window.addEventListener('blur',onBlur,{once:true});
+    try{window.location.href=this.upiLink();}catch(e){}
+    setTimeout(()=>{
+      window.removeEventListener('blur',onBlur);
+      if(!left) this.toast('Open this on your phone, or scan the code');
+    },1200);
+  };
+
+  /* ---------- song mode ---------- */
+  updSong=(fn,cb)=>{
+    this.setState(s=>({song:fn(s.song||this.blankSong())}),()=>{this.rebuildSongLive();cb&&cb();});
+  };
+  secDur(x){
+    const ppb=ppbSafe(x.num,x.den,x.noteValue||denNote(x.den));
+    const tb=x.bars*ppb;let t=0;
+    for(let i=0;i<tb;i++){
+      const f=tb>1?i/(tb-1):0;
+      const bpm=x.bpmEnd!=null?x.bpm+(x.bpmEnd-x.bpm)*f:x.bpm;
+      t+=pulseSec(bpm);
+    }
+    return t*(x.repeat||1);
+  }
+  fmt(t){
+    if(!isFinite(t)) return '∞';
+    const m=Math.floor(t/60),sec=Math.floor(t%60);
+    return m+':'+String(sec).padStart(2,'0');
+  }
+  patchSec=(id,patch)=>this.updSong(song=>({...song,sections:song.sections.map(x=>x.id===id?{...x,...patch}:x)}));
+  addSection=()=>{
+    const s=this.state,song=s.song||this.blankSong();
+    const last=song.sections[song.sections.length-1];
+    const base=last||{num:4,den:4,bpm:s.bpm,subdiv:1,noteValue:s.noteValue};
+    const nv=base.noteValue||denNote(base.den);
+    this.updSong(g=>({...g,sections:[...g.sections,{id:'s'+Date.now(),name:'Section '+(g.sections.length+1),
+      bars:8,num:base.num,den:base.den,noteValue:nv,bpm:base.bpm,bpmEnd:null,subdiv:base.subdiv,repeat:1,
+      states:defaultStates(ppbSafe(base.num,base.den,nv)),pattern:null}]}));
+  };
+  dupSection=id=>this.updSong(g=>{
+    const i=g.sections.findIndex(x=>x.id===id),c={...g.sections[i],id:'s'+Date.now(),name:g.sections[i].name+' copy'};
+    const arr=[...g.sections];arr.splice(i+1,0,c);return {...g,sections:arr};
+  });
+  delSection=id=>this.updSong(g=>({...g,sections:g.sections.filter(x=>x.id!==id)}));
+  moveSection=(id,dir)=>this.updSong(g=>{
+    const arr=[...g.sections],i=arr.findIndex(x=>x.id===id),j=i+dir;
+    if(j<0||j>=arr.length) return g;
+    const [x]=arr.splice(i,1);arr.splice(j,0,x);return {...g,sections:arr};
+  });
+  dropSection=(id)=>{
+    const from=this.dragId;
+    if(!from||from===id) return;
+    this.updSong(g=>{
+      const arr=[...g.sections],i=arr.findIndex(x=>x.id===from),j=arr.findIndex(x=>x.id===id);
+      const [x]=arr.splice(i,1);arr.splice(j,0,x);return {...g,sections:arr};
+    });
+    this.dragId=null;
+  };
+  secTapBeat=(id,i)=>{
+    const sec=this.state.song.sections.find(x=>x.id===id);
+    const st=sec.states&&sec.states.length===sec.num?[...sec.states]:defaultStates(sec.num);
+    st[i]=cycleState(st[i]);
+    this.patchSec(id,{states:st});
+  };
+  parseSig=(id,v)=>{
+    const m=String(v).split('/');
+    const n=Math.max(1,Math.min(32,parseInt(m[0],10)||4));
+    const d=[1,2,4,8,16,32].includes(parseInt(m[1],10))?parseInt(m[1],10):4;
+    const sec=this.state.song.sections.find(x=>x.id===id);
+    let nv=sec.noteValue||denNote(sec.den);
+    if(pulsesPerBar(n,d,nv)==null) nv=denNote(d);
+    this.patchSec(id,{num:n,den:d,noteValue:nv,states:resizeStates(sec.states,ppbSafe(n,d,nv))});
+  };
+  setSecNote=(id,nv)=>{
+    const sec=this.state.song.sections.find(x=>x.id===id);
+    if(pulsesPerBar(sec.num,sec.den,nv)==null) return;
+    this.patchSec(id,{noteValue:nv,states:resizeStates(sec.states,ppbSafe(sec.num,sec.den,nv))});
+  };
+  toggleRamp=()=>this.setState({rampOpen:!this.state.rampOpen});
+  generateRamp=()=>{
+    const r=this.state.ramp||{from:90,to:180,steps:20,mins:10};
+    const steps=Math.max(2,Math.min(60,Math.round(r.steps)));
+    const total=Math.max(.2,r.mins)*60,per=total/steps;
+    const s=this.state,secs=[];
+    for(let i=0;i<steps;i++){
+      const bpm=clampBpm(r.from+(r.to-r.from)*i/(steps-1));
+      const barSec=pulseSec(bpm)*this.ppb();
+      const bars=Math.max(1,Math.round(per/barSec));
+      secs.push({id:'r'+Date.now()+'_'+i,name:Math.round(bpm)+' BPM',bars,num:s.num,den:s.den,
+        noteValue:s.noteValue||denNote(s.den),bpm,bpmEnd:null,
+        subdiv:s.subdiv,repeat:1,states:this.stateArr(),pattern:null});
+    }
+    this.updSong(g=>({...g,sections:[...g.sections,...secs]}));
+    this.setState({rampOpen:false});
+    this.toast(steps+' sections · '+r.from+' → '+r.to+' BPM');
+  };
+  setRamp=(k,v)=>this.setState({ramp:{...(this.state.ramp||{from:90,to:180,steps:20,mins:10}),[k]:parseFloat(v)||0}});
+  loadExample=key=>{
+    const mk=(name,bars,num,den,bpm,extra)=>({id:'x'+Math.random().toString(36).slice(2,8),name,bars,num,den,bpm,
+      noteValue:denNote(den),bpmEnd:null,subdiv:1,repeat:1,states:defaultStates(num),pattern:null,...(extra||{})});
+    let song;
+    if(key==='march') song={name:'Marching show',loop:1,sections:[
+      mk('Opener',16,4,4,144),mk('Waltz interlude',8,3,4,120),mk('Odd hit',4,5,8,120,{states:statesFromGrouping(5,'3+2')}),
+      mk('Build',12,4,4,120,{bpmEnd:168}),mk('Closer',8,6,8,168,{states:statesFromGrouping(6,'3+3')})]};
+    else if(key==='odd') song={name:'Odd-time riff',loop:0,sections:[
+      mk('Riff A',4,7,8,132,{states:statesFromGrouping(7,'3+2+2')}),mk('Turnaround',2,4,4,132),
+      mk('Riff B',4,5,4,132,{states:statesFromGrouping(5,'3+2')})]};
+    else{
+      const secs=[];
+      for(let i=0;i<8;i++){const bpm=80+i*10;secs.push(mk(bpm+' BPM',8,4,4,bpm));}
+      song={name:'Speed trainer 80→150',loop:1,sections:secs};
+    }
+    this.setState({song,songMode:true},()=>{this.rebuildSongLive();});
+    this.toast('Loaded “'+song.name+'”');
+  };
+  saveSong=()=>{
+    const song=this.state.song;
+    const copy={...song,id:'g'+Date.now()};
+    this.setState({songs:[...this.state.songs,copy]});
+    this.toast('Song saved');
+  };
+  loadSong=g=>{this.setState({song:{...g},songMode:true},()=>this.rebuildSongLive());this.toast('Loaded “'+g.name+'”');};
+  dupSong=g=>this.setState({songs:[...this.state.songs,{...g,id:'g'+Date.now(),name:g.name+' copy'}]});
+  delSong=id=>this.setState({songs:this.state.songs.filter(g=>g.id!==id)});
+  renameSong=(id,name)=>this.setState({songs:this.state.songs.map(g=>g.id===id?{...g,name}:g)});
+  onSongName=e=>this.updSong(g=>({...g,name:e.target.value}));
+  exportSong=()=>{
+    try{
+      const blob=new Blob([JSON.stringify({format:'pendulum-song-1',song:this.state.song},null,2)],{type:'application/json'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=(this.state.song.name||'song').replace(/[^\w-]+/g,'-').toLowerCase()+'.json';
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+      this.toast('Exported');
+    }catch(e){this.toast('Export failed');}
+  };
+  importSong=e=>{
+    const f=e.target.files&&e.target.files[0];
+    if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const d=JSON.parse(r.result);
+        const song=d.song||d;
+        if(!song.sections||!song.sections.length) throw 0;
+        song.sections=song.sections.map((x,i)=>{
+          const num=x.num||4,den=x.den||4,nv=NV[x.noteValue]?x.noteValue:denNote(den);
+          const ppb=ppbSafe(num,den,nv);
+          return {id:x.id||'i'+i,name:x.name||'Section '+(i+1),bars:x.bars||4,num,den,noteValue:nv,
+            bpm:x.bpm||120,bpmEnd:x.bpmEnd??null,subdiv:x.subdiv||1,repeat:x.repeat||1,
+            states:resizeStates(x.states,ppb),pattern:x.pattern||null};
+        });
+        this.setState({song:{name:song.name||'Imported song',loop:song.loop??1,sections:song.sections},songMode:true},
+          ()=>this.rebuildSongLive());
+        this.toast('Imported “'+(song.name||'song')+'”');
+      }catch(err){this.toast('That file is not a Pendulum song');}
+    };
+    r.readAsText(f);
+    e.target.value='';
+  };
+  toggleSongMode=()=>{
+    const on=!this.state.songMode;
+    if(this.playing) this.stop();
+    this.setState({songMode:on},()=>{if(on) this.buildSong();});
+  };
+  mapDown=e=>{
+    const el=e.currentTarget,r=el.getBoundingClientRect();
+    const p=Math.max(0,Math.min(.999,(e.clientX-r.left)/r.width));
+    const bars=this.songBarCount||1;
+    this.jumpToBar(Math.floor(p*bars));
+  };
+  jumpToBar(n){
+    if(!this.state.songMode) return this.toast('Turn on Song mode to play the chart');
+    const ctx=this.ensureAudio();
+    if(!this.songEv) this.buildSong();
+    let i=this.songEv.findIndex(e=>e.bar>=n);
+    if(i<0) i=0;
+    const rel=this.songEv[i].t;
+    if(this.playing){
+      this.vq=[];this.songIdx=i;this.lastRel=rel-1e-9;
+      this.songBase=ctx.currentTime+.08-rel;
+      this.next=this.pull();
+      this.scheduleAhead();
+    }else{
+      this.pendingRel=rel;this.pendingIdx=i;this.start();
+    }
+  }
+  songVals(){
+    const s=this.state,song=s.song||this.blankSong();
+    const secs=song.sections;
+    const durs=secs.map(x=>this.secDur(x));
+    const pass=durs.reduce((a,b)=>a+b,0);
+    const loop=song.loop===0?Infinity:(song.loop||1);
+    const inp={height:'40px',borderRadius:'10px',background:'var(--panel)',border:'1px solid var(--line)',
+      textAlign:'center',fontSize:'15px',outline:'none',width:'62px',fontVariantNumeric:'tabular-nums'};
+    let tickBar=0;const barTicks=[];
+    secs.forEach((x,si)=>{
+      const n=x.bars*(x.repeat||1);
+      for(let b=0;b<n;b++){
+        barTicks.push({i:tickBar++,style:{flex:'1 1 0',minWidth:'2px',borderRadius:'2px',
+          background:si%2?'var(--acc2)':'var(--acc)',opacity:.62}});
+      }
+    });
+    this.songBarCount=barTicks.length;
+    const sectionRows=secs.map((x,si)=>{
+      const xnv=x.noteValue||denNote(x.den);
+      const xppb=ppbSafe(x.num,x.den,xnv);
+      const st=x.states&&x.states.length===xppb?x.states:defaultStates(xppb);
+      const dotBase={flex:'none',borderRadius:'50%',padding:0};
+      return {
+        name:x.name,dur:this.fmt(durs[si]),
+        noteValue:xnv,onNote:e=>this.setSecNote(x.id,e.target.value),
+        ppbText:xppb+(xppb===1?' pulse/bar':' pulses/bar'),
+        noteOpts:NOTE_VALUES.map(([l,k])=>({k,label:l,dis:pulsesPerBar(x.num,x.den,k)==null})),
+        card:{background:'var(--panel2)',border:'1px solid var(--line)',borderRadius:'14px',padding:'12px',
+          display:'flex',flexDirection:'column',gap:'10px'},
+        onName:e=>this.patchSec(x.id,{name:e.target.value}),
+        up:()=>this.moveSection(x.id,-1),down:()=>this.moveSection(x.id,1),
+        dup:()=>this.dupSection(x.id),del:()=>this.delSection(x.id),
+        dragStart:()=>{this.dragId=x.id;},dragOver:e=>e.preventDefault(),drop:()=>this.dropSection(x.id),
+        fields:[
+          {label:'BARS',mode:'numeric',ph:'8',value:x.bars,style:inp,on:e=>this.patchSec(x.id,{bars:Math.max(1,parseInt(e.target.value,10)||1)})},
+          {label:'SIG',mode:'text',ph:'4/4',value:x.num+'/'+x.den,style:inp,on:e=>this.parseSig(x.id,e.target.value)},
+          {label:'BPM',mode:'decimal',ph:'120',value:x.bpm,style:inp,on:e=>this.patchSec(x.id,{bpm:clampBpm(parseFloat(e.target.value)||120)})},
+          {label:'TO BPM',mode:'decimal',ph:'ramp',value:x.bpmEnd==null?'':x.bpmEnd,style:inp,
+            on:e=>this.patchSec(x.id,{bpmEnd:e.target.value===''?null:clampBpm(parseFloat(e.target.value)||x.bpm)})},
+          {label:'SUB',mode:'numeric',ph:'1',value:x.subdiv,style:inp,on:e=>this.patchSec(x.id,{subdiv:Math.max(1,Math.min(16,parseInt(e.target.value,10)||1))})},
+          {label:'REPEAT',mode:'numeric',ph:'1',value:x.repeat||1,style:inp,on:e=>this.patchSec(x.id,{repeat:Math.max(1,parseInt(e.target.value,10)||1)})}
+        ],
+        dots:st.map((v,i)=>({i,label:'Beat '+(i+1),tap:()=>this.secTapBeat(x.id,i),
+          style:v===1?{...dotBase,width:'13px',height:'13px',background:'var(--acc)',border:0}
+            :v===2?{...dotBase,width:'11px',height:'11px',background:'transparent',border:'1.5px solid var(--line2)'}
+            :{...dotBase,width:'9px',height:'9px',background:'var(--line2)',border:0}}))
+      };
+    });
+    const r=s.ramp||{from:90,to:180,steps:20,mins:10};
+    const perStep=(Math.max(.2,r.mins)*60)/Math.max(2,r.steps);
+    return {
+      songOpen:s.panel==='song',songName:song.name,onSongName:this.onSongName,
+      loopChips:[['1','1',1],['2','2',2],['4','4',4],['∞','inf',0]].map(([l,k,v])=>({label:l,
+        on:()=>this.updSong(g=>({...g,loop:v})),
+        style:{width:'40px',height:'40px',flex:'none',borderRadius:'11px',fontSize:'13px',fontWeight:600,
+          border:'1px solid '+((song.loop||1)===v||(song.loop===0&&v===0)?'var(--acc)':'var(--line)'),
+          background:(song.loop??1)===v?'var(--acc-soft)':'var(--chip)',
+          color:(song.loop??1)===v?'var(--acc)':'var(--dim)'}})),
+      barTicks,mapDown:this.mapDown,sectionRows,
+      songSummary:secs.length+' sections · '+barTicks.length+' bars',
+      songClock:this.fmt(pass)+(loop===Infinity?' × ∞':loop>1?' × '+loop:''),
+      totalText:loop===Infinity?'∞  (one pass '+this.fmt(pass)+')':this.fmt(pass*loop),
+      addSection:this.addSection,toggleRamp:this.toggleRamp,rampOpen:!!s.rampOpen,generateRamp:this.generateRamp,
+      rampFields:[['FROM','from'],['TO','to'],['STEPS','steps'],['MINUTES','mins']].map(([l,k])=>({label:l,value:r[k],on:e=>this.setRamp(k,e.target.value)})),
+      rampSummary:Math.max(2,Math.round(r.steps))+' equal sections of '+this.fmt(perStep)+', landing exactly on '+r.to+' BPM.',
+      exampleChips:[['Marching show','march'],['Odd-time riff','odd'],['Speed trainer','trainer']].map(([l,k])=>this.chip(l,false,()=>this.loadExample(k))),
+      songRows:s.songs.map(g=>({name:g.name,meta:g.sections.length+' sections · '+this.fmt(g.sections.reduce((a,x)=>a+this.secDur(x),0)),
+        load:()=>this.loadSong(g),dup:()=>this.dupSong(g),del:()=>this.delSong(g.id),rename:e=>this.renameSong(g.id,e.target.value)})),
+      saveSong:this.saveSong,exportSong:this.exportSong,importSong:this.importSong,
+      songMode:s.songMode,toggleSongMode:this.toggleSongMode,
+      songModeLabel:s.songMode?'SONG MODE ON':'SONG MODE OFF',
+      songModeStyle:{flex:'1',height:'50px',borderRadius:'14px',fontSize:'11px',letterSpacing:'.16em',fontWeight:700,
+        border:'1px solid '+(s.songMode?'var(--acc)':'var(--line2)'),
+        background:s.songMode?'var(--acc-soft)':'transparent',color:s.songMode?'var(--acc)':'var(--dim)'},
+      songStartStyle:{flex:'1',height:'50px',borderRadius:'14px',fontSize:'12px',letterSpacing:'.22em',fontWeight:700,
+        background:s.running?'var(--chip)':'var(--acc)',color:s.running?'var(--ink)':'#fff',
+        border:'1px solid '+(s.running?'var(--line2)':'transparent')}
+    };
+  }
+
+  /* ---------- render ---------- */
+  renderVals(){
+    const s=this.state;
+    const songView=s.songMode&&s.running&&this.viewStates;
+    const st=songView?this.viewStates:this.stateArr();
+    const sd=Math.max(1,songView?(this.viewSubdiv||1):s.subdiv);
+    const offs=subOffsets(sd,s.swingMode||'off',s.swingAmount??67);
+    const durs=slotDurs(offs);
+    const collapse=st.length*sd>32;
+    this._flashSubs=st.length*sd<=48;
+    const dotBase={borderRadius:'50%',display:'block',transition:'transform 90ms ease-out',willChange:'transform'};
+    const wrapBase={flexBasis:0,minWidth:0,height:'30px',display:'grid',alignItems:'center',justifyItems:'start',
+      padding:0,border:0,background:'none'};
+    const pulseDot=v=>v===1?{...dotBase,width:'16px',height:'16px',background:'var(--acc)'}
+      :v===2?{...dotBase,width:'13px',height:'13px',background:'transparent',border:'1.5px solid var(--line2)'}
+      :{...dotBase,width:'11px',height:'11px',background:'var(--line2)'};
+    const dots=[];
+    st.forEach((v,p)=>{
+      const slots=collapse?1:sd;
+      for(let j=0;j<slots;j++){
+        const isPulse=j===0;
+        dots.push({p,sj:isPulse?-1:j,dis:!isPulse,hid:!isPulse,
+          label:isPulse?'Beat '+(p+1):'',
+          tap:isPulse?(()=>{if(!songView) this.tapBeat(p);}):null,
+          wrap:{...wrapBase,flexGrow:collapse?1:durs[j],marginLeft:isPulse&&p>0?'7px':0,
+            cursor:isPulse&&!songView?'pointer':'default'},
+          dot:isPulse?pulseDot(v):{...dotBase,width:'6px',height:'6px',background:'var(--line2)',opacity:.5}});
+      }
+    });
+    const polyOn=s.polyKey!=='off'&&s.polyX>1;
+    const polyDots=polyOn?Array.from({length:s.polyX},(_,i)=>({i,style:{flex:'none',width:i===0?'11px':'8px',height:i===0?'11px':'8px',borderRadius:'50%',background:'var(--line2)',transition:'background 90ms ease-out'}})):[];
+    const grouping=groupingFromStates(st);
+    const bpmText=s.decimals?Number(s.bpm).toFixed(1):String(Math.round(s.bpm));
+    return {
+      ...this.settingsVals(),
+      ...this.songVals(),
+      bpmText,markingText:marking(s.bpm*(NV[s.noteValue||denNote(s.den)]??1)),
+      sigText:songView?this.viewSig:s.num+'/'+s.den,
+      dotCaption:collapse?'SUBDIVISIONS HIDDEN — TAP A BEAT: CLICK → ACCENT → MUTE':'TAP A BEAT: CLICK → ACCENT → MUTE',
+      noteText:NV_LABEL[songView?(this.viewNv||'quarter'):(s.noteValue||denNote(s.den))],
+      groupText:grouping?grouping:'',
+      dots,polyDots,polyOn,decimals:s.decimals,
+      editingBpm:s.editingBpm,notEditingBpm:!s.editingBpm,bpmDraft:s.bpmDraft,
+      startEditBpm:this.startEditBpm,onBpmDraft:this.onBpmDraft,onBpmKey:this.onBpmKey,commitBpm:this.commitBpm,
+      sliderDown:this.sliderDown,sliderKey:this.sliderKey,downStart:this.downStart,
+      tap:this.tap,toggleDecimals:this.toggleDecimals,toggleRun:this.toggleRun,
+      toggleTheme:this.toggleTheme,openSettings:this.openSettings,openSong:this.openSong,
+      openSupport:this.openSupport,navSong:this.navStyle(s.panel==='song'),
+      navSettings:this.navStyle(s.panel==='settings'),navSupport:this.navStyle(s.panel==='support'),
+      isDark:s.theme==='dark',isLight:s.theme!=='dark',
+      themeLabel:s.theme==='dark'?'Switch to light theme':'Switch to dark theme',
+      themeBtnStyle:{width:'36px',height:'36px',flex:'none',padding:0,margin:0,boxSizing:'border-box',
+        display:'grid',placeItems:'center',border:0,background:'none',borderRadius:'50%',cursor:'pointer'},
+      install:this.install,installable:s.installable,toast:s.toast,
+      startLabel:s.running?'STOP':'START',
+      liveHint:s.running?'':'SPACE START · T TAP',
+      decStyle:{width:'82px',height:'54px',borderRadius:'16px',fontSize:'14px',fontWeight:600,letterSpacing:'.04em',
+        border:'1px solid '+(s.decimals?'var(--acc)':'var(--line)'),background:s.decimals?'var(--acc-soft)':'var(--chip)',color:s.decimals?'var(--acc)':'var(--dim)'},
+      startStyle:{width:'100%',height:'62px',borderRadius:'18px',fontSize:'15px',letterSpacing:'.28em',fontWeight:700,
+        background:s.running?'var(--chip)':'var(--acc)',color:s.running?'var(--ink)':'#fff',
+        border:'1px solid '+(s.running?'var(--line2)':'transparent'),transition:'background 120ms ease-out'}
+    };
+  }
+}
+
+</script>
+</body>
+</html>
